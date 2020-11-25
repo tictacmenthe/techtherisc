@@ -1,8 +1,10 @@
 library ieee;
 use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
 
 library src_lib;
 use src_lib.ttr_pkg.all;
+use src_lib.utility_pkg.all;
 
 entity instr_decoder is
   generic(
@@ -28,13 +30,16 @@ entity instr_decoder is
 end entity instr_decoder;
 
 architecture rtl of instr_decoder is
+  -- internal constants
+  constant C_FUNC7_ZERO : std_logic_vector(C_FUNCT7_W-1 downto 0) := (others=>'0');
+
   -- fixed position aliases
-  alias opcode_i     : std_logic_vector(C_OPCODE_W-1 downto 0) is instruction(C_OPCODE_H downto C_OPCODE_L);
-  alias reg_dest_i   : std_logic_vector(C_RDEST_W-1  downto 0) is instruction(C_RDEST_H  downto C_RDEST_L);
-  alias reg_src2_i   : std_logic_vector(C_RSRC2_W-1  downto 0) is instruction(C_RSRC2_H  downto C_RSRC2_L);
-  alias reg_src1_i   : std_logic_vector(C_RSRC1_W-1  downto 0) is instruction(C_RSRC1_H  downto C_RSRC1_L);
-  alias reg_funct3_i : std_logic_vector(C_FUNCT3_W-1 downto 0) is instruction(C_FUNCT3_H downto C_FUNCT3_L);
-  alias reg_funct7_i : std_logic_vector(C_FUNCT7_W-1 downto 0) is instruction(C_FUNCT7_H downto C_FUNCT7_L);
+  alias opcode_i    : std_logic_vector(C_OPCODE_W-1 downto 0) is instruction(R_OPCODE);
+  alias reg_dest_i  : std_logic_vector(C_RDEST_W-1  downto 0) is instruction(R_RDEST);
+  alias reg_src2_i  : std_logic_vector(C_RSRC2_W-1  downto 0) is instruction(R_RSRC2);
+  alias reg_src1_i  : std_logic_vector(C_RSRC1_W-1  downto 0) is instruction(R_RSRC1);
+  alias funct3_i    : std_logic_vector(C_FUNCT3_W-1 downto 0) is instruction(R_FUNCT3);
+  alias funct7_i    : std_logic_vector(C_FUNCT7_W-1 downto 0) is instruction(R_FUNCT7);
   -- aliases for immediate values, depending on type of instruction: I/S/B/U/J
 
 begin
@@ -48,8 +53,27 @@ begin
       funct        <= (others=>'0');
       immediate    <= (others=>'0');
     elsif rising_edge(clk) then
-      opcode <=opcode_i;
+      opcode        <=  opcode_i;
+      -- reg_src1_sel  <=  to_integer(unsigned(reg_src1_i));
+      -- reg_src2_sel  <=  to_integer(unsigned(reg_src2_i));
+      -- reg_dest_sel  <=  to_integer(unsigned(reg_dest_i));
+
       case opcode_i is
+        when C_OPCODE_OP_IMM    =>
+          reg_dest_sel  <=  to_integer(unsigned(reg_dest_i(R_REG)));
+          reg_src1_sel  <=  to_integer(unsigned(reg_src1_i(R_REG)));
+          funct     <= C_FUNC7_ZERO & funct3_i;
+          immediate <= resize_slv(instruction(R_IMM_I), 32);
+        when C_OPCODE_LUI       => 
+        when C_OPCODE_AUIPC     => 
+        when C_OPCODE_OP        => 
+        when C_OPCODE_JAL       => 
+        when C_OPCODE_JALR      => 
+        when C_OPCODE_BRANCH    => 
+        when C_OPCODE_LOAD      => 
+        when C_OPCODE_STORE     => 
+        when C_OPCODE_MISC_MEM  => 
+        when C_OPCODE_SYSTEM    => 
         when others =>
           null;
       end case;

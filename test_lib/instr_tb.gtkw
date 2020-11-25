@@ -1,13 +1,15 @@
 [*]
 [*] GTKWave Analyzer v3.3.100 (w)1999-2019 BSI
-[*] Wed Nov 25 12:28:34 2020
+[*] Wed Nov 25 20:40:15 2020
 [*]
 [dumpfile] "C:\Users\Tic-Tac\Desktop\Projects\HDL\TechTheRISC\vunit_out\test_output\test_lib.instr_tb.all_4ef0e6c5f402ccb3c9e6eb9070e0ffefda22d2a0\ghdl\wave.ghw"
+[dumpfile_mtime] "Wed Nov 25 20:39:27 2020"
+[dumpfile_size] 2414
 [savefile] "C:\Users\Tic-Tac\Desktop\Projects\HDL\TechTheRISC\test_lib\instr_tb.gtkw"
-[timestart] 0
+[timestart] 4651000000
 [size] 1536 809
-[pos] -191 -191
-*-29.995602 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[pos] -1 -1
+*-28.065990 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] top.
 [treeopen] top.instr_tb.
 [sst_width] 197
@@ -28,5 +30,19 @@ top.instr_tb.i_dut.reg_src1_sel
 top.instr_tb.i_dut.reg_src2_sel
 @28
 top.instr_tb.i_dut.rst
+@22
+#{top.instr_tb.immediate[31:0]} top.instr_tb.immediate[31] top.instr_tb.immediate[30] top.instr_tb.immediate[29] top.instr_tb.immediate[28] top.instr_tb.immediate[27] top.instr_tb.immediate[26] top.instr_tb.immediate[25] top.instr_tb.immediate[24] top.instr_tb.immediate[23] top.instr_tb.immediate[22] top.instr_tb.immediate[21] top.instr_tb.immediate[20] top.instr_tb.immediate[19] top.instr_tb.immediate[18] top.instr_tb.immediate[17] top.instr_tb.immediate[16] top.instr_tb.immediate[15] top.instr_tb.immediate[14] top.instr_tb.immediate[13] top.instr_tb.immediate[12] top.instr_tb.immediate[11] top.instr_tb.immediate[10] top.instr_tb.immediate[9] top.instr_tb.immediate[8] top.instr_tb.immediate[7] top.instr_tb.immediate[6] top.instr_tb.immediate[5] top.instr_tb.immediate[4] top.instr_tb.immediate[3] top.instr_tb.immediate[2] top.instr_tb.immediate[1] top.instr_tb.immediate[0]
+@420
+top.instr_tb.immediate_int
+@22
+#{top.instr_tb.instruction[31:0]} top.instr_tb.instruction[31] top.instr_tb.instruction[30] top.instr_tb.instruction[29] top.instr_tb.instruction[28] top.instr_tb.instruction[27] top.instr_tb.instruction[26] top.instr_tb.instruction[25] top.instr_tb.instruction[24] top.instr_tb.instruction[23] top.instr_tb.instruction[22] top.instr_tb.instruction[21] top.instr_tb.instruction[20] top.instr_tb.instruction[19] top.instr_tb.instruction[18] top.instr_tb.instruction[17] top.instr_tb.instruction[16] top.instr_tb.instruction[15] top.instr_tb.instruction[14] top.instr_tb.instruction[13] top.instr_tb.instruction[12] top.instr_tb.instruction[11] top.instr_tb.instruction[10] top.instr_tb.instruction[9] top.instr_tb.instruction[8] top.instr_tb.instruction[7] top.instr_tb.instruction[6] top.instr_tb.instruction[5] top.instr_tb.instruction[4] top.instr_tb.instruction[3] top.instr_tb.instruction[2] top.instr_tb.instruction[1] top.instr_tb.instruction[0]
+#{top.instr_tb.opcode[6:0]} top.instr_tb.opcode[6] top.instr_tb.opcode[5] top.instr_tb.opcode[4] top.instr_tb.opcode[3] top.instr_tb.opcode[2] top.instr_tb.opcode[1] top.instr_tb.opcode[0]
+@420
+top.instr_tb.reg_dest_sel
+top.instr_tb.reg_src1_sel
+top.instr_tb.reg_src2_sel
+@28
+top.instr_tb.rst
+top.instr_tb.tb_en_clk
 [pattern_trace] 1
 [pattern_trace] 0

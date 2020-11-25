@@ -47,7 +47,7 @@ architecture testbench of instr_tb is
   signal opcode         : std_logic_vector(C_OPCODE_W-1 downto 0);
   signal funct          : std_logic_vector(C_FUNCT_W-1 downto 0);
   signal immediate      : std_logic_vector(C_XLEN-1 downto 0);
-
+  signal immediate_int  : integer range -2**(C_XLEN-1) to 2**(C_XLEN-1)-1;
 begin
   --  Component instantiation.
   i_dut: entity src_lib.instr_decoder
@@ -68,6 +68,8 @@ begin
       funct         => funct,
       immediate     => immediate
     );
+
+  immediate_int <= to_integer(signed(immediate));
 
   -- clk generation process
   p_clk_rst: process
@@ -102,6 +104,22 @@ begin
     en        <='1';
     wait for 1 us;
     wait until falling_edge(clk);
+
+    instruction <= "000101101001" & "00001" & "000" & "00000" & C_OPCODE_OP_IMM;
+    wait until falling_edge(clk);
+    check(immediate_int = 16#169#, "Random immediate value failed");
+
+    instruction <= "011111111111" & "01111" & "000" & "00010" & C_OPCODE_OP_IMM;
+    wait until falling_edge(clk);
+    check(immediate_int = 16#7FF#, "Maximum immediate value failed");
+
+    instruction <= "100000000000" & "01111" & "000" & "00010" & C_OPCODE_OP_IMM;
+    wait until falling_edge(clk);
+    check(immediate_int = 16#FFFFF800#, "Minimum immediate value failed");
+
+    instruction <= "111111111111" & "00011" & "000" & "00010" & C_OPCODE_OP_IMM;
+    wait until falling_edge(clk);
+    check(immediate_int = -1, "-1 immediate value failed");
 
     -- info(integer'image(to_integer(count_data)));
     -- check(to_integer(count_data) = 0, "count data not at expected value");
