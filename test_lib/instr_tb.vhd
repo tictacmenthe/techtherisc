@@ -105,19 +105,19 @@ begin
     wait for 1 us;
     wait until falling_edge(clk);
 
-    instruction <= "000101101001" & "00001" & "000" & "00000" & C_OPCODE_OP_IMM;
+    instruction <= "000101101001" & "00001" & "000" & "00000" & C_OPCODE_OPIMM;
     wait until falling_edge(clk);
     check(immediate_int = 16#169#, "Random immediate value failed");
 
-    instruction <= "011111111111" & "01111" & "000" & "00010" & C_OPCODE_OP_IMM;
+    instruction <= "011111111111" & "01111" & "000" & "00010" & C_OPCODE_OPIMM;
     wait until falling_edge(clk);
     check(immediate_int = 16#7FF#, "Maximum immediate value failed");
 
-    instruction <= "100000000000" & "01111" & "000" & "00010" & C_OPCODE_OP_IMM;
+    instruction <= "100000000000" & "01111" & "000" & "00010" & C_OPCODE_OPIMM;
     wait until falling_edge(clk);
     check(immediate_int = 16#FFFFF800#, "Minimum immediate value failed");
 
-    instruction <= "111111111111" & "00011" & "000" & "00010" & C_OPCODE_OP_IMM;
+    instruction <= "111111111111" & "00011" & "000" & "00010" & C_OPCODE_OPIMM;
     wait until falling_edge(clk);
     check(immediate_int = -1, "-1 immediate value failed");
 

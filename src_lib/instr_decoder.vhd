@@ -53,27 +53,53 @@ begin
       funct        <= (others=>'0');
       immediate    <= (others=>'0');
     elsif rising_edge(clk) then
-      opcode        <=  opcode_i;
-      -- reg_src1_sel  <=  to_integer(unsigned(reg_src1_i));
-      -- reg_src2_sel  <=  to_integer(unsigned(reg_src2_i));
-      -- reg_dest_sel  <=  to_integer(unsigned(reg_dest_i));
+      opcode  <=  opcode_i;
+      reg_src1_sel  <=  to_integer(unsigned(reg_src1_i(R_REG)));
+      reg_src2_sel  <=  to_integer(unsigned(reg_src2_i(R_REG)));
+      reg_dest_sel  <=  to_integer(unsigned(reg_dest_i(R_REG)));
 
       case opcode_i is
-        when C_OPCODE_OP_IMM    =>
-          reg_dest_sel  <=  to_integer(unsigned(reg_dest_i(R_REG)));
-          reg_src1_sel  <=  to_integer(unsigned(reg_src1_i(R_REG)));
-          funct     <= C_FUNC7_ZERO & funct3_i;
-          immediate <= resize_slv(instruction(R_IMM_I), 32);
-        when C_OPCODE_LUI       => 
-        when C_OPCODE_AUIPC     => 
+        when C_OPCODE_OPIMM =>
+          funct     <=  C_FUNC7_ZERO & funct3_i;
+          immediate <=  resize_slv(instruction(R_IMM_I), G_XLEN);
+
+        when C_OPCODE_LUI|C_OPCODE_AUIPC  =>
+          immediate <=  instruction(R_IMM_U) & x"000";
+
         when C_OPCODE_OP        => 
+          funct     <=  funct7_i & funct3_i;
+
         when C_OPCODE_JAL       => 
+          immediate <=  resize_slv(
+                          instruction(R_IMM_J_3) & instruction(R_IMM_J_2) &
+                          instruction(R_IMM_J_1) & instruction(R_IMM_J_0) & '0'
+                        , G_XLEN);
+
         when C_OPCODE_JALR      => 
-        when C_OPCODE_BRANCH    => 
-        when C_OPCODE_LOAD      => 
+          funct     <= (others=>'0');
+          immediate <= resize_slv(instruction(R_IMM_I), G_XLEN);
+
+        when C_OPCODE_BRANCH    =>
+          funct     <= C_FUNC7_ZERO & funct3_i;
+          immediate <=  resize_slv(
+                          instruction(R_IMM_B_3) & instruction(R_IMM_B_2) &
+                          instruction(R_IMM_B_1) & instruction(R_IMM_B_0) & '0'
+                        , G_XLEN);
+
+        when C_OPCODE_LOAD      =>
+          funct     <= C_FUNC7_ZERO & funct3_i;
+          immediate <= resize_slv(instruction(R_IMM_I), G_XLEN);
+
         when C_OPCODE_STORE     => 
-        when C_OPCODE_MISC_MEM  => 
-        when C_OPCODE_SYSTEM    => 
+          funct     <= C_FUNC7_ZERO & funct3_i;
+          immediate <= resize_slv(instruction(R_IMM_S_1) & instruction(R_IMM_S_0), G_XLEN);
+
+        when C_OPCODE_MISCMEM  =>
+          
+        
+        when C_OPCODE_SYSTEM   =>
+
+        
         when others =>
           null;
       end case;
