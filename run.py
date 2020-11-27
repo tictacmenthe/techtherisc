@@ -1,7 +1,7 @@
 from vunit import VUnit
 
 vu = VUnit.from_argv()
-
+vu.enable_location_preprocessing()
 src_lib = vu.add_library("src_lib")
 tool_lib = vu.add_library("tool_lib")
 test_lib = vu.add_library("test_lib")

@@ -11,10 +11,6 @@ package ttr_pkg is
 
   subtype R_REG is natural range integer(ceil(log2(real(C_NREG))))-1 downto 0;
 
-  subtype reg_t is std_logic_vector(C_XLEN-1 downto 0);
-  subtype reg_sel_t is integer range 0 to C_NREG-1;
-
-
   -- INSTRUCTION DECODER CONFIG -------------------------------------------------------------------
   -- Positions in instruction, constant ranges
   subtype R_FUNCT7 is natural range 31 downto 25;
@@ -46,12 +42,14 @@ package ttr_pkg is
   constant C_OPCODE_BRANCH  : opcode_t := "11" & "000" & "11";
   constant C_OPCODE_LOAD    : opcode_t := "00" & "000" & "11";
   constant C_OPCODE_STORE   : opcode_t := "01" & "000" & "11";
-  constant C_OPCODE_MISCMEM: opcode_t := "00" & "011" & "11";
+  constant C_OPCODE_MISCMEM : opcode_t := "00" & "011" & "11";
   constant C_OPCODE_SYSTEM  : opcode_t := "11" & "100" & "11";
 
   -- Immediates positions section by section, right(0) to left(n)
   -- I_imm
   subtype R_IMM_I   is natural range 31 downto 20;
+  constant C_IMM_I_W : natural := R_IMM_I'high - R_IMM_I'low + 1;
+
   -- S_imm
   subtype R_IMM_S_1 is natural range 31 downto 25;
   subtype R_IMM_S_0 is natural range 11 downto  7;
@@ -69,6 +67,15 @@ package ttr_pkg is
   subtype R_IMM_J_0 is natural range 30 downto 21;
   
   -- Funct3 codes
+  subtype R_MEM_FUNC_SIZE is natural range 1 downto 0;
+  subtype mem_size_t is std_logic_vector(R_MEM_FUNC_SIZE);
+  constant C_MEM_SIZE_B : mem_size_t := "00";
+  constant C_MEM_SIZE_H : mem_size_t := "01";
+  constant C_MEM_SIZE_W : mem_size_t := "10";
+  constant C_MEM_SIZE_I : mem_size_t := "11"; -- invalid, consider a Full Word
+  constant C_MEM_LOAD   : std_logic := '0';
+  constant C_MEM_STORE  : std_logic := '1';
+
   subtype funct3_t is std_logic_vector(C_FUNCT3_W-1 downto 0);
   constant C_FUNCT3_OPIMM_ADDI  : funct3_t := "000";
   constant C_FUNCT3_OPIMM_SLTI  : funct3_t := "010";
@@ -80,5 +87,10 @@ package ttr_pkg is
   constant C_FUNCT3_OPIMM_SLLI  : funct3_t := "001";
   constant C_FUNCT3_OPIMM_SRLI  : funct3_t := "101";
   constant C_FUNCT3_OPIMM_SRAI  : funct3_t := "101"; -- bit 30 is 1 too
-  
+
+  -- Subtypes for ports
+  subtype reg_t is std_logic_vector(C_XLEN-1 downto 0);       -- Register
+  subtype reg_sel_t is integer range 0 to C_NREG-1;           -- Register selector
+  subtype instr_t is std_logic_vector(C_ILEN-1 downto 0);     -- Instruction
+  subtype funct_t is std_logic_vector(C_FUNCT_W-1 downto 0);  -- Function code
 end ttr_pkg;

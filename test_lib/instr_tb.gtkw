@@ -1,72 +1,43 @@
 [*]
 [*] GTKWave Analyzer v3.3.100 (w)1999-2019 BSI
-[*] Thu Nov 26 00:29:21 2020
+[*] Fri Nov 27 16:15:12 2020
 [*]
 [dumpfile] "C:\Users\Tic-Tac\Desktop\Projects\HDL\TechTheRISC\vunit_out\test_output\test_lib.instr_tb.all_4ef0e6c5f402ccb3c9e6eb9070e0ffefda22d2a0\ghdl\wave.ghw"
-[dumpfile_mtime] "Thu Nov 26 00:29:10 2020"
-[dumpfile_size] 2515
+[dumpfile_mtime] "Fri Nov 27 16:15:05 2020"
+[dumpfile_size] 2781
 [savefile] "C:\Users\Tic-Tac\Desktop\Projects\HDL\TechTheRISC\test_lib\instr_tb.gtkw"
-[timestart] 4681000000
+[timestart] 4466000000
 [size] 1536 809
 [pos] -1 -1
-*-28.191376 4275000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-28.224798 5100000001 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] top.
 [treeopen] top.instr_tb.
 [sst_width] 197
 [signals_width] 243
 [sst_expanded] 1
 [sst_vpaned_height] 227
-@28
+@420
 top.instr_tb.i_dut.clk
-top.instr_tb.rst
-top.instr_tb.i_dut.en
+top.instr_tb.i_dut.i_en
 @22
-#{top.instr_tb.i_dut.instruction[31:0]} top.instr_tb.i_dut.instruction[31] top.instr_tb.i_dut.instruction[30] top.instr_tb.i_dut.instruction[29] top.instr_tb.i_dut.instruction[28] top.instr_tb.i_dut.instruction[27] top.instr_tb.i_dut.instruction[26] top.instr_tb.i_dut.instruction[25] top.instr_tb.i_dut.instruction[24] top.instr_tb.i_dut.instruction[23] top.instr_tb.i_dut.instruction[22] top.instr_tb.i_dut.instruction[21] top.instr_tb.i_dut.instruction[20] top.instr_tb.i_dut.instruction[19] top.instr_tb.i_dut.instruction[18] top.instr_tb.i_dut.instruction[17] top.instr_tb.i_dut.instruction[16] top.instr_tb.i_dut.instruction[15] top.instr_tb.i_dut.instruction[14] top.instr_tb.i_dut.instruction[13] top.instr_tb.i_dut.instruction[12] top.instr_tb.i_dut.instruction[11] top.instr_tb.i_dut.instruction[10] top.instr_tb.i_dut.instruction[9] top.instr_tb.i_dut.instruction[8] top.instr_tb.i_dut.instruction[7] top.instr_tb.i_dut.instruction[6] top.instr_tb.i_dut.instruction[5] top.instr_tb.i_dut.instruction[4] top.instr_tb.i_dut.instruction[3] top.instr_tb.i_dut.instruction[2] top.instr_tb.i_dut.instruction[1] top.instr_tb.i_dut.instruction[0]
-#{top.instr_tb.i_dut.opcode[6:0]} top.instr_tb.i_dut.opcode[6] top.instr_tb.i_dut.opcode[5] top.instr_tb.i_dut.opcode[4] top.instr_tb.i_dut.opcode[3] top.instr_tb.i_dut.opcode[2] top.instr_tb.i_dut.opcode[1] top.instr_tb.i_dut.opcode[0]
+#{top.instr_tb.i_dut.i_instruction[31:0]} top.instr_tb.i_dut.i_instruction[31] top.instr_tb.i_dut.i_instruction[30] top.instr_tb.i_dut.i_instruction[29] top.instr_tb.i_dut.i_instruction[28] top.instr_tb.i_dut.i_instruction[27] top.instr_tb.i_dut.i_instruction[26] top.instr_tb.i_dut.i_instruction[25] top.instr_tb.i_dut.i_instruction[24] top.instr_tb.i_dut.i_instruction[23] top.instr_tb.i_dut.i_instruction[22] top.instr_tb.i_dut.i_instruction[21] top.instr_tb.i_dut.i_instruction[20] top.instr_tb.i_dut.i_instruction[19] top.instr_tb.i_dut.i_instruction[18] top.instr_tb.i_dut.i_instruction[17] top.instr_tb.i_dut.i_instruction[16] top.instr_tb.i_dut.i_instruction[15] top.instr_tb.i_dut.i_instruction[14] top.instr_tb.i_dut.i_instruction[13] top.instr_tb.i_dut.i_instruction[12] top.instr_tb.i_dut.i_instruction[11] top.instr_tb.i_dut.i_instruction[10] top.instr_tb.i_dut.i_instruction[9] top.instr_tb.i_dut.i_instruction[8] top.instr_tb.i_dut.i_instruction[7] top.instr_tb.i_dut.i_instruction[6] top.instr_tb.i_dut.i_instruction[5] top.instr_tb.i_dut.i_instruction[4] top.instr_tb.i_dut.i_instruction[3] top.instr_tb.i_dut.i_instruction[2] top.instr_tb.i_dut.i_instruction[1] top.instr_tb.i_dut.i_instruction[0]
+@420
+#{top.instr_tb.i_dut.o_alu_f[9:0]} top.instr_tb.i_dut.o_alu_f[9] top.instr_tb.i_dut.o_alu_f[8] top.instr_tb.i_dut.o_alu_f[7] top.instr_tb.i_dut.o_alu_f[6] top.instr_tb.i_dut.o_alu_f[5] top.instr_tb.i_dut.o_alu_f[4] top.instr_tb.i_dut.o_alu_f[3] top.instr_tb.i_dut.o_alu_f[2] top.instr_tb.i_dut.o_alu_f[1] top.instr_tb.i_dut.o_alu_f[0]
+top.instr_tb.i_dut.o_alu_op_valid
+@22
+#{top.instr_tb.i_dut.o_immediate[31:0]} top.instr_tb.i_dut.o_immediate[31] top.instr_tb.i_dut.o_immediate[30] top.instr_tb.i_dut.o_immediate[29] top.instr_tb.i_dut.o_immediate[28] top.instr_tb.i_dut.o_immediate[27] top.instr_tb.i_dut.o_immediate[26] top.instr_tb.i_dut.o_immediate[25] top.instr_tb.i_dut.o_immediate[24] top.instr_tb.i_dut.o_immediate[23] top.instr_tb.i_dut.o_immediate[22] top.instr_tb.i_dut.o_immediate[21] top.instr_tb.i_dut.o_immediate[20] top.instr_tb.i_dut.o_immediate[19] top.instr_tb.i_dut.o_immediate[18] top.instr_tb.i_dut.o_immediate[17] top.instr_tb.i_dut.o_immediate[16] top.instr_tb.i_dut.o_immediate[15] top.instr_tb.i_dut.o_immediate[14] top.instr_tb.i_dut.o_immediate[13] top.instr_tb.i_dut.o_immediate[12] top.instr_tb.i_dut.o_immediate[11] top.instr_tb.i_dut.o_immediate[10] top.instr_tb.i_dut.o_immediate[9] top.instr_tb.i_dut.o_immediate[8] top.instr_tb.i_dut.o_immediate[7] top.instr_tb.i_dut.o_immediate[6] top.instr_tb.i_dut.o_immediate[5] top.instr_tb.i_dut.o_immediate[4] top.instr_tb.i_dut.o_immediate[3] top.instr_tb.i_dut.o_immediate[2] top.instr_tb.i_dut.o_immediate[1] top.instr_tb.i_dut.o_immediate[0]
+@420
+top.instr_tb.i_dut.o_mem_direction
+top.instr_tb.i_dut.o_mem_op_valid
+#{top.instr_tb.i_dut.o_mem_size[1:0]} top.instr_tb.i_dut.o_mem_size[1] top.instr_tb.i_dut.o_mem_size[0]
+top.instr_tb.i_dut.o_mem_unsigned
 @23
-#{top.instr_tb.i_dut.funct[9:0]} top.instr_tb.i_dut.funct[9] top.instr_tb.i_dut.funct[8] top.instr_tb.i_dut.funct[7] top.instr_tb.i_dut.funct[6] top.instr_tb.i_dut.funct[5] top.instr_tb.i_dut.funct[4] top.instr_tb.i_dut.funct[3] top.instr_tb.i_dut.funct[2] top.instr_tb.i_dut.funct[1] top.instr_tb.i_dut.funct[0]
+#{top.instr_tb.i_dut.o_opcode[6:0]} top.instr_tb.i_dut.o_opcode[6] top.instr_tb.i_dut.o_opcode[5] top.instr_tb.i_dut.o_opcode[4] top.instr_tb.i_dut.o_opcode[3] top.instr_tb.i_dut.o_opcode[2] top.instr_tb.i_dut.o_opcode[1] top.instr_tb.i_dut.o_opcode[0]
 @420
-top.instr_tb.reg_dest_sel
-top.instr_tb.reg_src1_sel
-top.instr_tb.reg_src2_sel
-@c00022
-#{top.instr_tb.immediate[31:0]} top.instr_tb.immediate[31] top.instr_tb.immediate[30] top.instr_tb.immediate[29] top.instr_tb.immediate[28] top.instr_tb.immediate[27] top.instr_tb.immediate[26] top.instr_tb.immediate[25] top.instr_tb.immediate[24] top.instr_tb.immediate[23] top.instr_tb.immediate[22] top.instr_tb.immediate[21] top.instr_tb.immediate[20] top.instr_tb.immediate[19] top.instr_tb.immediate[18] top.instr_tb.immediate[17] top.instr_tb.immediate[16] top.instr_tb.immediate[15] top.instr_tb.immediate[14] top.instr_tb.immediate[13] top.instr_tb.immediate[12] top.instr_tb.immediate[11] top.instr_tb.immediate[10] top.instr_tb.immediate[9] top.instr_tb.immediate[8] top.instr_tb.immediate[7] top.instr_tb.immediate[6] top.instr_tb.immediate[5] top.instr_tb.immediate[4] top.instr_tb.immediate[3] top.instr_tb.immediate[2] top.instr_tb.immediate[1] top.instr_tb.immediate[0]
-@28
-top.instr_tb.immediate[31]
-top.instr_tb.immediate[30]
-top.instr_tb.immediate[29]
-top.instr_tb.immediate[28]
-top.instr_tb.immediate[27]
-top.instr_tb.immediate[26]
-top.instr_tb.immediate[25]
-top.instr_tb.immediate[24]
-top.instr_tb.immediate[23]
-top.instr_tb.immediate[22]
-top.instr_tb.immediate[21]
-top.instr_tb.immediate[20]
-top.instr_tb.immediate[19]
-top.instr_tb.immediate[18]
-top.instr_tb.immediate[17]
-top.instr_tb.immediate[16]
-top.instr_tb.immediate[15]
-top.instr_tb.immediate[14]
-top.instr_tb.immediate[13]
-top.instr_tb.immediate[12]
-top.instr_tb.immediate[11]
-top.instr_tb.immediate[10]
-top.instr_tb.immediate[9]
-top.instr_tb.immediate[8]
-top.instr_tb.immediate[7]
-top.instr_tb.immediate[6]
-top.instr_tb.immediate[5]
-top.instr_tb.immediate[4]
-top.instr_tb.immediate[3]
-top.instr_tb.immediate[2]
-top.instr_tb.immediate[1]
-top.instr_tb.immediate[0]
-@1401200
--group_end
-@420
-top.instr_tb.immediate_int
+top.instr_tb.i_dut.o_reg_dest_sel
+top.instr_tb.i_dut.o_reg_src1_sel
+top.instr_tb.i_dut.o_reg_src2_sel
+top.instr_tb.i_dut.o_valid
+top.instr_tb.i_dut.rst
 [pattern_trace] 1
 [pattern_trace] 0
