@@ -75,13 +75,22 @@ architecture testbench of instr_tb is
   
   type test_array_t is array(natural range <>) of dut_case_r;
   constant test_case : test_array_t := (
-    (x"169" & "00001" & "000" & "00000" & C_OPCODE_OPIMM, (1, 0, 0, '1', "0000000000", '0', "XX", 'X', C_OPCODE_OPIMM, x"00000169")),
-    (x"7FF" & "11111" & "000" & "01111" & C_OPCODE_OPIMM, (31, 0, 15, '1', "0000000000", '0', "XX", 'X', C_OPCODE_OPIMM, x"000007FF")),
-    (x"800" & "00001" & "000" & "00001" & C_OPCODE_OPIMM, (1, 0, 1, '1', "0000000000", '0', "XX", 'X', C_OPCODE_OPIMM, x"FFFFF800")),
-    (x"FFF" & "10001" & "000" & "10000" & C_OPCODE_OPIMM, (17, 0, 16, '1', "0000000000", '0', "XX", 'X', C_OPCODE_OPIMM, x"FFFFFFFF")),
-    ("0000000" & "00010" & "00001" & "000" & "00100" & C_OPCODE_OP, (1, 2, 4, '1', "0000000000", '0', "XX", 'X', C_OPCODE_OP, x"XXXXXXXX"))
+    (x"169" & "00001" & "000" & "00000" & C_OPCODE_OPIMM,               ( 1,  0,  0, '1', "0000000000", '0', "--", '-', C_OPCODE_OPIMM, x"00000169")),
+    (x"7FF" & "11111" & "000" & "01111" & C_OPCODE_OPIMM,               (31,  0, 15, '1', "0000000000", '0', "--", '-', C_OPCODE_OPIMM, x"000007FF")),
+    (x"800" & "00001" & "000" & "00001" & C_OPCODE_OPIMM,               ( 1,  0,  1, '1', "0000000000", '0', "--", '-', C_OPCODE_OPIMM, x"FFFFF800")),
+    (x"FFF" & "10001" & "000" & "10000" & C_OPCODE_OPIMM,               (17,  0, 16, '1', "0000000000", '0', "--", '-', C_OPCODE_OPIMM, x"FFFFFFFF")),
+    ("0000000" & "00010" & "00001" & "000" & "00100" & C_OPCODE_OP,     ( 1,  2,  4, '1', "0000000000", '0', "--", '-', C_OPCODE_OP,    x"--------")),
+    ("0000000" & "10100" & "11111" & "111" & "00001" & C_OPCODE_OP,     (31, 20,  1, '1', "0000000111", '0', "--", '-', C_OPCODE_OP,    x"--------")),
+    ("1111111" & "00000" & "00001" & "000" & "11111" & C_OPCODE_OP,     ( 1,  0, 31, '1', "1111111000", '0', "--", '-', C_OPCODE_OP,    x"--------")),
+    ("1111111" & "00010" & "00000" & "111" & "00111" & C_OPCODE_OP,     ( 0,  2,  7, '1', "1111111111", '0', "--", '-', C_OPCODE_OP,    x"--------")),
+    (x"000" & "00000" & "000" & "00111" & C_OPCODE_LOAD,                ( 0,  2,  7, '0', "----------", '1', "00", '0', C_OPCODE_LOAD,  x"00000000")),
+    (x"000" & "00000" & "001" & "00111" & C_OPCODE_LOAD,                ( 0,  2,  7, '0', "----------", '1', "01", '0', C_OPCODE_LOAD,  x"00000000")),
+    (x"000" & "00000" & "010" & "00111" & C_OPCODE_LOAD,                ( 0,  2,  7, '0', "----------", '1', "10", '0', C_OPCODE_LOAD,  x"00000000")),
+    (x"000" & "00000" & "100" & "00111" & C_OPCODE_LOAD,                ( 0,  2,  7, '0', "----------", '1', "00", '1', C_OPCODE_LOAD,  x"00000000")),
+    (x"000" & "00000" & "101" & "00111" & C_OPCODE_LOAD,                ( 0,  2,  7, '0', "----------", '1', "01", '1', C_OPCODE_LOAD,  x"00000000")),
+    (x"000" & "00000" & "110" & "00111" & C_OPCODE_LOAD,                ( 0,  2,  7, '0', "----------", '1', "10", '1', C_OPCODE_LOAD,  x"00000000")),
+    ("1010101" & "00010" & "00000" & "110" & "01010" & C_OPCODE_STORE,  ( 0,  2,  7, '0', "----------", '1', "10", '1', C_OPCODE_STORE, x"FFFFFAAA"))
   );
-
 begin
   --  Component instantiation.
   i_dut: entity src_lib.instr_decoder
@@ -148,6 +157,7 @@ begin
     check_equal(op_valid, '0');
 
     wait for C_RST_WIDTH;
+    info("Tested " & integer'image(test_case'length) & " cases.");
 
     info("End of test");
     test_runner_cleanup(runner);
@@ -163,22 +173,21 @@ begin
       if op_valid = '1' then
         -- check each value if possible
         if count < test_case'length then
-          check_equal(reg_src1_sel, test_case(count).result.rs1_sel);
-          if opcode /= C_OPCODE_OPIMM then
-            check_equal(reg_src2_sel, test_case(count).result.rs2_sel);
+          info(to_string(count) & ht & to_hstring(mem_size));
+          check_equal(reg_src1_sel, test_case(count).result.rs1_sel, result("for rs1"));
+          if opcode = C_OPCODE_OP or opcode = C_OPCODE_STORE then
+            check_equal(reg_src2_sel, test_case(count).result.rs2_sel, result("for rs2"));
           end if;
-          check_equal(reg_dest_sel, test_case(count).result.rd_sel);
-          check_equal(alu_op_valid, test_case(count).result.alu_op_valid);
-          check_equal(alu_f,        test_case(count).result.alu_f);
-          check_equal(mem_op_valid, test_case(count).result.mem_op_valid);
-          if opcode /= C_OPCODE_OPIMM and opcode /= C_OPCODE_OP then
-            check_equal(mem_size,     test_case(count).result.mem_size);
-            check_equal(mem_unsigned, test_case(count).result.mem_unsigned);
+          if opcode /= C_OPCODE_STORE then
+            check_equal(reg_dest_sel, test_case(count).result.rd_sel, result("for rd"));
           end if;
-          check_equal(opcode,       test_case(count).result.opcode);
-          if opcode = C_OPCODE_OPIMM then
-            check_equal(immediate,    test_case(count).result.immediate);
-          end if;
+          check_match(alu_op_valid, test_case(count).result.alu_op_valid, result("for aluopvalid"));
+          check_match(alu_f,        test_case(count).result.alu_f, result("for alu_f"));
+          check_match(mem_op_valid, test_case(count).result.mem_op_valid, result("for memopvalid"));
+          check_match(mem_size,     test_case(count).result.mem_size, result("for mem_size"));
+          check_match(mem_unsigned, test_case(count).result.mem_unsigned, result("for memunsigned"));
+          check_match(opcode,       test_case(count).result.opcode, result("for opcode"));
+          check_match(immediate,    test_case(count).result.immediate, result("for imm"));
           end if;
         count := count + 1;
 
