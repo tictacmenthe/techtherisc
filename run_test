@@ -1,9 +1,0 @@
-#/bin/bash
-
-if [ -f "test_lib/$1.vhd" ];then
-  echo "Running and displaying testlib.$1.all."
-  python run.py $2 test_lib.$1.all --gtkwave-fmt ghw && gtkwave --rcvar "do_initial_zoom_fit 1" test_lib/$1.gtkw
-else
-  echo "Running all available tests."
-  python run.py $2 --gtkwave-fmt ghw
-fi
