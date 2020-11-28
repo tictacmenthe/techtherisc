@@ -40,7 +40,9 @@ architecture testbench of instr_tb is
   -- Internal signals
   signal tb_en_clk        : std_logic;
 
-  signal clk, rst, en     : std_logic := '0';
+  signal clk            : std_logic := '1';
+  signal rst            : std_logic := '1';
+  signal en             : std_logic := '0';
   signal reg_src1_sel, reg_src2_sel, reg_dest_sel : reg_sel_t;
 
   signal instruction    : instr_t := (others=>'0');
@@ -64,6 +66,7 @@ architecture testbench of instr_tb is
     mem_op_valid  : std_logic;
     mem_size      : mem_size_t;
     mem_unsigned  : std_logic;
+    mem_direction : std_logic;
     opcode        : opcode_t;
     immediate     : reg_t;
   end record dut_out_t;
@@ -75,21 +78,23 @@ architecture testbench of instr_tb is
   
   type test_array_t is array(natural range <>) of dut_case_r;
   constant test_case : test_array_t := (
-    (x"169" & "00001" & "000" & "00000" & C_OPCODE_OPIMM,               ( 1,  0,  0, '1', "0000000000", '0', "--", '-', C_OPCODE_OPIMM, x"00000169")),
-    (x"7FF" & "11111" & "000" & "01111" & C_OPCODE_OPIMM,               (31,  0, 15, '1', "0000000000", '0', "--", '-', C_OPCODE_OPIMM, x"000007FF")),
-    (x"800" & "00001" & "000" & "00001" & C_OPCODE_OPIMM,               ( 1,  0,  1, '1', "0000000000", '0', "--", '-', C_OPCODE_OPIMM, x"FFFFF800")),
-    (x"FFF" & "10001" & "000" & "10000" & C_OPCODE_OPIMM,               (17,  0, 16, '1', "0000000000", '0', "--", '-', C_OPCODE_OPIMM, x"FFFFFFFF")),
-    ("0000000" & "00010" & "00001" & "000" & "00100" & C_OPCODE_OP,     ( 1,  2,  4, '1', "0000000000", '0', "--", '-', C_OPCODE_OP,    x"--------")),
-    ("0000000" & "10100" & "11111" & "111" & "00001" & C_OPCODE_OP,     (31, 20,  1, '1', "0000000111", '0', "--", '-', C_OPCODE_OP,    x"--------")),
-    ("1111111" & "00000" & "00001" & "000" & "11111" & C_OPCODE_OP,     ( 1,  0, 31, '1', "1111111000", '0', "--", '-', C_OPCODE_OP,    x"--------")),
-    ("1111111" & "00010" & "00000" & "111" & "00111" & C_OPCODE_OP,     ( 0,  2,  7, '1', "1111111111", '0', "--", '-', C_OPCODE_OP,    x"--------")),
-    (x"000" & "00000" & "000" & "00111" & C_OPCODE_LOAD,                ( 0,  2,  7, '0', "----------", '1', "00", '0', C_OPCODE_LOAD,  x"00000000")),
-    (x"000" & "00000" & "001" & "00111" & C_OPCODE_LOAD,                ( 0,  2,  7, '0', "----------", '1', "01", '0', C_OPCODE_LOAD,  x"00000000")),
-    (x"000" & "00000" & "010" & "00111" & C_OPCODE_LOAD,                ( 0,  2,  7, '0', "----------", '1', "10", '0', C_OPCODE_LOAD,  x"00000000")),
-    (x"000" & "00000" & "100" & "00111" & C_OPCODE_LOAD,                ( 0,  2,  7, '0', "----------", '1', "00", '1', C_OPCODE_LOAD,  x"00000000")),
-    (x"000" & "00000" & "101" & "00111" & C_OPCODE_LOAD,                ( 0,  2,  7, '0', "----------", '1', "01", '1', C_OPCODE_LOAD,  x"00000000")),
-    (x"000" & "00000" & "110" & "00111" & C_OPCODE_LOAD,                ( 0,  2,  7, '0', "----------", '1', "10", '1', C_OPCODE_LOAD,  x"00000000")),
-    ("1010101" & "00010" & "00000" & "110" & "01010" & C_OPCODE_STORE,  ( 0,  2,  7, '0', "----------", '1', "10", '1', C_OPCODE_STORE, x"FFFFFAAA"))
+    (x"169" & "00001" & "000" & "00000" & C_OPCODE_OPIMM,               ( 1,  0,  0, '1', "0000000000", '0', "--", '-', '-', C_OPCODE_OPIMM, x"00000169")),
+    (x"7FF" & "11111" & "000" & "01111" & C_OPCODE_OPIMM,               (31,  0, 15, '1', "0000000000", '0', "--", '-', '-', C_OPCODE_OPIMM, x"000007FF")),
+    (x"800" & "00001" & "000" & "00001" & C_OPCODE_OPIMM,               ( 1,  0,  1, '1', "0000000000", '0', "--", '-', '-', C_OPCODE_OPIMM, x"FFFFF800")),
+    (x"FFF" & "10001" & "000" & "10000" & C_OPCODE_OPIMM,               (17,  0, 16, '1', "0000000000", '0', "--", '-', '-', C_OPCODE_OPIMM, x"FFFFFFFF")),
+    ("0000000" & "00010" & "00001" & "000" & "00100" & C_OPCODE_OP,     ( 1,  2,  4, '1', "0000000000", '0', "--", '-', '-', C_OPCODE_OP,    x"--------")),
+    ("0000000" & "10100" & "11111" & "111" & "00001" & C_OPCODE_OP,     (31, 20,  1, '1', "0000000111", '0', "--", '-', '-', C_OPCODE_OP,    x"--------")),
+    ("1111111" & "00000" & "00001" & "000" & "11111" & C_OPCODE_OP,     ( 1,  0, 31, '1', "1111111000", '0', "--", '-', '-', C_OPCODE_OP,    x"--------")),
+    ("1111111" & "00010" & "00000" & "111" & "00111" & C_OPCODE_OP,     ( 0,  2,  7, '1', "1111111111", '0', "--", '-', '-', C_OPCODE_OP,    x"--------")),
+    (x"000" & "00000" & "000" & "00111" & C_OPCODE_LOAD,                ( 0,  2,  7, '0', "----------", '1', "00", '0', '0', C_OPCODE_LOAD,  x"00000000")),
+    (x"001" & "00000" & "001" & "00111" & C_OPCODE_LOAD,                ( 0,  2,  7, '0', "----------", '1', "01", '0', '0', C_OPCODE_LOAD,  x"00000001")),
+    (x"7FF" & "00000" & "010" & "00111" & C_OPCODE_LOAD,                ( 0,  2,  7, '0', "----------", '1', "10", '0', '0', C_OPCODE_LOAD,  x"000007FF")),
+    (x"FFF" & "00000" & "100" & "00111" & C_OPCODE_LOAD,                ( 0,  2,  7, '0', "----------", '1', "00", '1', '0', C_OPCODE_LOAD,  x"FFFFFFFF")),
+    (x"ABA" & "00000" & "101" & "00111" & C_OPCODE_LOAD,                ( 0,  2,  7, '0', "----------", '1', "01", '1', '0', C_OPCODE_LOAD,  x"FFFFFABA")),
+    (x"FAC" & "00000" & "110" & "00111" & C_OPCODE_LOAD,                ( 0,  2,  7, '0', "----------", '1', "10", '1', '0', C_OPCODE_LOAD,  x"FFFFFFAC")),
+    ("1010101" & "00010" & "00000" & "110" & "01010" & C_OPCODE_STORE,  ( 0,  2,  7, '0', "----------", '1', "10", '1', '1', C_OPCODE_STORE, x"FFFFFAAA")),
+    ("0000101" & "11111" & "01010" & "110" & "01010" & C_OPCODE_STORE,  (10, 31,  7, '0', "----------", '1', "10", '1', '1', C_OPCODE_STORE, x"000000AA")),
+    ("0111111" & "11111" & "01010" & "110" & "11111" & C_OPCODE_STORE,  (10, 31,  7, '0', "----------", '1', "10", '1', '1', C_OPCODE_STORE, x"000007FF"))
   );
 begin
   --  Component instantiation.
@@ -115,7 +120,6 @@ begin
       o_valid         => op_valid
     );
 
-
   -- clk generation process
   p_clk_rst: process
   begin
@@ -123,17 +127,18 @@ begin
       clk <= not clk;
       wait for C_CLK_PERIOD/2;
     else
-      clk <= '0';
+      clk <= '1';
       wait until tb_en_clk = '1';
     end if;
   end process p_clk_rst;
   
-
   -- TB process
   p_tb_main: process
   begin
     rst <= '1';
     test_runner_setup(runner, runner_cfg);
+    info(runner_cfg);
+    -- show(get_logger(default_checker), display_handler, pass);
     info("Start of test");
     en        <= '0';
 
@@ -154,8 +159,9 @@ begin
     
     instruction <= (others=>'0');
     wait until op_valid = '0' for C_CLK_PERIOD + 1 fs;
-    check_equal(op_valid, '0');
+    check_equal(op_valid, '0', result("End empty instruction"));
 
+    en        <= '0';
     wait for C_RST_WIDTH;
     info("Tested " & integer'image(test_case'length) & " cases.");
 
@@ -163,17 +169,14 @@ begin
     test_runner_cleanup(runner);
   end process;
 
-
   p_check_outputs: process(clk)
     variable count   : integer := 0;
-    variable imm_got : reg_t := (others=>'0');
-    variable imm_exp : reg_t := (others=>'0');
   begin
     if rising_edge(clk) then
       if op_valid = '1' then
         -- check each value if possible
         if count < test_case'length then
-          info(to_string(count) & ht & to_hstring(mem_size));
+          info("Read output from decoder: " & to_string(count+1));
           check_equal(reg_src1_sel, test_case(count).result.rs1_sel, result("for rs1"));
           if opcode = C_OPCODE_OP or opcode = C_OPCODE_STORE then
             check_equal(reg_src2_sel, test_case(count).result.rs2_sel, result("for rs2"));
@@ -181,16 +184,16 @@ begin
           if opcode /= C_OPCODE_STORE then
             check_equal(reg_dest_sel, test_case(count).result.rd_sel, result("for rd"));
           end if;
-          check_match(alu_op_valid, test_case(count).result.alu_op_valid, result("for aluopvalid"));
-          check_match(alu_f,        test_case(count).result.alu_f, result("for alu_f"));
-          check_match(mem_op_valid, test_case(count).result.mem_op_valid, result("for memopvalid"));
-          check_match(mem_size,     test_case(count).result.mem_size, result("for mem_size"));
-          check_match(mem_unsigned, test_case(count).result.mem_unsigned, result("for memunsigned"));
-          check_match(opcode,       test_case(count).result.opcode, result("for opcode"));
-          check_match(immediate,    test_case(count).result.immediate, result("for imm"));
-          end if;
+          check_match(alu_op_valid,   test_case(count).result.alu_op_valid, result("for aluopvalid"));
+          check_match(alu_f,          test_case(count).result.alu_f, result("for alu_f"));
+          check_match(mem_op_valid,   test_case(count).result.mem_op_valid, result("for memopvalid"));
+          check_match(mem_size,       test_case(count).result.mem_size, result("for mem_size"));
+          check_match(mem_unsigned,   test_case(count).result.mem_unsigned, result("for mem_unsigned"));
+          check_match(mem_direction,  test_case(count).result.mem_direction, result("for mem_dir"));
+          check_match(opcode,         test_case(count).result.opcode, result("for opcode"));
+          check_match(immediate,      test_case(count).result.immediate, result("for imm"));
+        end if;
         count := count + 1;
-
       end if;
     end if;
   end process p_check_outputs;
