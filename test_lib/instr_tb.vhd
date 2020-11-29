@@ -45,7 +45,8 @@ architecture testbench of instr_tb is
   signal en             : std_logic := '0';
   signal reg_src1_sel, reg_src2_sel, reg_dest_sel : reg_sel_t;
 
-  signal instruction    : instr_t := (others=>'0');
+  constant C_INSTR_ZERO : instr_t := (others=>'0');
+  signal instruction    : instr_t := C_INSTR_ZERO;
   signal opcode         : opcode_t;
   signal funct          : funct_t;
   signal immediate      : reg_t := (others=>'0');
@@ -137,12 +138,11 @@ begin
   begin
     rst <= '1';
     test_runner_setup(runner, runner_cfg);
-    info(runner_cfg);
     -- show(get_logger(default_checker), display_handler, pass);
     info("Start of test");
     en        <= '0';
 
-    instruction <= (others=>'0');
+    instruction <= C_INSTR_ZERO;
 
     rst       <= '1';
     tb_en_clk <= '1';
@@ -154,13 +154,14 @@ begin
 
     for i in test_case'range loop
       instruction <= test_case(i).instr;
+      info("Write number " & to_string(i));
       wait until rising_edge(clk);
     end loop;
     
-    instruction <= (others=>'0');
-    wait until op_valid = '0' for C_CLK_PERIOD + 1 fs;
-    check_equal(op_valid, '0', result("End empty instruction"));
-
+    instruction <= C_INSTR_ZERO;
+    info("Write null instruction");
+    wait until rising_edge(clk);
+  
     en        <= '0';
     wait for C_RST_WIDTH;
     info("Tested " & integer'image(test_case'length) & " cases.");
@@ -176,7 +177,7 @@ begin
       if op_valid = '1' then
         -- check each value if possible
         if count < test_case'length then
-          info("Read output from decoder: " & to_string(count+1));
+          info("Read output from decoder: " & to_string(count));
           check_equal(reg_src1_sel, test_case(count).result.rs1_sel, result("for rs1"));
           if opcode = C_OPCODE_OP or opcode = C_OPCODE_STORE then
             check_equal(reg_src2_sel, test_case(count).result.rs2_sel, result("for rs2"));
@@ -194,6 +195,9 @@ begin
           check_match(immediate,      test_case(count).result.immediate, result("for imm"));
         end if;
         count := count + 1;
+      else
+        check_equal(alu_op_valid, '0', result("for no alu op valid if no op valid"));
+        check_equal(mem_op_valid, '0', result("for no mem op valid if no op valid"));
       end if;
     end if;
   end process p_check_outputs;

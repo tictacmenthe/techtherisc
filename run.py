@@ -15,13 +15,13 @@ gui_request = any(x in copy_argv for x in ['-g', '--gui'])
 
 
 # Construct the new argv from input argv by finding the files to use in test (with wildcards pattern matching)
-for i, arg in enumerate(copy_argv):
+for arg in copy_argv:
   found = glob.glob('test_lib/*'+arg+'*.vhd')
   if found: # If the pattern matches a .vhd file in test_lib
      # TB pattern for VUnit, with wildcards to run all test cases for this TB
     final_argv.append('*'+arg+'*')
   else: # else, add it raw if not -g
-    if arg not in ['-g', '--gui']:
+    if arg not in ['-g', '--gui', '--dt']:
       final_argv.append(arg)
 
   # Records which tests in the list can be opened with gtkwave (already have an .gtkw file)
@@ -42,9 +42,8 @@ else:
   print("Running with no GUI.")
 
 
-exit()
 # force gtkwave files to be generated, even if not openned with GUI
-final_argv+=['--gtkwave-fmt', 'ghw']
+final_argv+=['--gtkwave-fmt', 'ghw', '--gtkwave-args', '--disp-time 1']
 
 def show_waves(results):
   for wave in waves:
@@ -66,5 +65,9 @@ src_lib.add_source_files(src_lib.name+"/registers.vhd")
 src_lib.add_source_files(src_lib.name+"/instr_decoder.vhd")
 test_lib.add_source_files(test_lib.name+"/reg_tb.vhd")
 test_lib.add_source_files(test_lib.name+"/instr_tb.vhd")
+
+# Display delta time too in logs
+if "--dt" in copy_argv:
+  vu.set_sim_option("ghdl.sim_flags", ["--disp-time"])
 
 vu.main(show_waves)

@@ -60,7 +60,6 @@ begin
       o_reg_dest_sel  <=  0;
       o_reg_src1_sel  <=  0;
 
-
       o_alu_op_valid  <= '0';
       o_alu_f         <= (others=>'0');
       o_immediate     <= (others=>'0');
@@ -124,13 +123,13 @@ begin
             o_mem_size      <= funct3_i(R_MEM_FUNC_SIZE);
             o_immediate     <= resize_slv(i_instruction(R_IMM_S_1) & i_instruction(R_IMM_S_0), C_XLEN);
 
-          when C_OPCODE_MISCMEM  =>-- doesn't do anything here, since there is no ordering option
+          when C_OPCODE_MISCMEM  => -- doesn't do anything here, since there is no ordering option
             o_valid   <= '0';
 
-          when C_OPCODE_SYSTEM   =>
+          when C_OPCODE_SYSTEM   => -- not implemented
+            o_valid   <= '0';
 
-
-          when others =>
+          when others =>            -- invalid opcode
             o_valid   <= '0';
         end case;
       end if;
