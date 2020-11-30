@@ -1,7 +1,7 @@
 library ieee;
 use ieee.std_logic_1164.all;
 
-entity registers is
+entity ttr_registers is
   generic(
     G_XLEN : positive := 32; -- register bit width
     G_NREG : positive := 32  -- number of registers (excluding PC)
@@ -21,9 +21,9 @@ entity registers is
     write_en      : in  std_logic;                            -- enable write to destination register
     reg_dest      : in  std_logic_vector(G_XLEN-1 downto 0)   -- value to write to destination register
   );
-end entity registers;
+end entity ttr_registers;
 
-architecture rtl of registers is
+architecture rtl of ttr_registers is
   type xregs_t is array(0 to G_NREG-1) of std_logic_vector(G_XLEN-1 downto 0);
   constant C_RZERO : std_logic_vector(G_XLEN-1 downto 0) := (others=>'0');
   signal xregs : xregs_t;

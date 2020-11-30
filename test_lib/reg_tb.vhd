@@ -47,7 +47,7 @@ architecture testbench of reg_tb is
 
 begin
   --  Component instantiation.
-  i_dut: entity src_lib.registers
+  i_dut: entity src_lib.ttr_registers
     generic map(
       G_XLEN => C_XLEN,
       G_NREG => C_NREG

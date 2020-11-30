@@ -43,7 +43,7 @@ else:
 
 
 # force gtkwave files to be generated, even if not openned with GUI
-final_argv+=['--gtkwave-fmt', 'ghw', '--gtkwave-args', '--disp-time 1']
+final_argv+=['--gtkwave-fmt', 'ghw']
 
 def show_waves(results):
   for wave in waves:
@@ -61,10 +61,12 @@ test_lib = vu.add_library("test_lib")
 
 src_lib.add_source_files(src_lib.name+"/utility_pkg.vhd")
 src_lib.add_source_files(src_lib.name+"/ttr_pkg.vhd")
-src_lib.add_source_files(src_lib.name+"/registers.vhd")
-src_lib.add_source_files(src_lib.name+"/instr_decoder.vhd")
+src_lib.add_source_files(src_lib.name+"/ttr_registers.vhd")
+src_lib.add_source_files(src_lib.name+"/ttr_decoder.vhd")
+src_lib.add_source_files(src_lib.name+"/ttr_alu.vhd")
 test_lib.add_source_files(test_lib.name+"/reg_tb.vhd")
 test_lib.add_source_files(test_lib.name+"/instr_tb.vhd")
+test_lib.add_source_files(test_lib.name+"/alu_tb.vhd")
 
 # Display delta time too in logs
 if "--dt" in copy_argv:

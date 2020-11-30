@@ -99,7 +99,7 @@ architecture testbench of instr_tb is
   );
 begin
   --  Component instantiation.
-  i_dut: entity src_lib.instr_decoder
+  i_dut: entity src_lib.ttr_decoder
     port map (
       clk             => clk,
       rst             => rst,

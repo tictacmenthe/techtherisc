@@ -6,7 +6,7 @@ library src_lib;
 use src_lib.ttr_pkg.all;
 use src_lib.utility_pkg.all;
 
-entity instr_decoder is
+entity ttr_decoder is
   port(
     clk             : in  std_logic;  -- system clock
     rst             : in  std_logic;  -- active high reset
@@ -34,9 +34,9 @@ entity instr_decoder is
     o_valid         : out std_logic   -- output data is available and valid. 1 cycle pulse
                                       -- no pulse on instructions not requiring external action (memory order)      
   );
-end entity instr_decoder;
+end entity ttr_decoder;
 
-architecture rtl of instr_decoder is
+architecture rtl of ttr_decoder is
   -- internal constants
   constant C_FUNC7_ZERO : std_logic_vector(C_FUNCT7_W-1 downto 0) := (others=>'0');
 
