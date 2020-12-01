@@ -70,7 +70,6 @@ architecture testbench of alu_tb is
 
   type dut_out_t is record
     reg_dest_sel  : natural;
-    write_en      : std_logic;
     dest_result   : reg_t;
   end record dut_out_t;
 
@@ -81,8 +80,25 @@ architecture testbench of alu_tb is
   
   type test_array_t is array(natural range <>) of dut_case_r;
   constant test_case : test_array_t := (
-    ((C_OPCODE_OPIMM, "0000000" & C_FUNCT3_OPIMM_ADDI, x"00000010", x"0000001F", x"00000000", x"00000000", 1), (1, '1', x"0000002F")),
-    ((C_OPCODE_OPIMM, "0000000" & C_FUNCT3_OPIMM_ADDI, x"00000001", x"FFFFFFFF", x"00000000", x"00000000", 1), (1, '1', x"00000000"))
+    ((C_OPCODE_OPIMM, "0000000" & C_FUNCT3_OPIMM_ADDI, x"00000010", x"0000001F", x"00000000", x"00000000",  1), ( 1, x"0000002F")),
+    ((C_OPCODE_OPIMM, "0000000" & C_FUNCT3_OPIMM_ADDI, x"00000001", x"FFFFFFFF", x"00000000", x"00000000",  1), ( 1, x"00000000")),
+    ((C_OPCODE_OPIMM, "0000000" & C_FUNCT3_OPIMM_ADDI, x"00000001", x"FFFFFFFF", x"00000000", x"00000000", 15), (15, x"00000000")),
+    ((C_OPCODE_OPIMM, "0000000" & C_FUNCT3_OPIMM_SLTI, x"2A5A5A5A", x"1A5A5A5A", x"BABABABA", x"00000000",  1), ( 1, x"00000001")),
+    ((C_OPCODE_OPIMM, "0000000" & C_FUNCT3_OPIMM_SLTI, x"2A5A5A5A", x"1A5A5A5A", x"00000000", x"00000000",  1), ( 1, x"00000001")),
+    ((C_OPCODE_OPIMM, "0000000" & C_FUNCT3_OPIMM_SLTI, x"FA5A5A5A", x"1A5A5A5A", x"00000000", x"00000000",  1), ( 1, x"00000000")),
+    ((C_OPCODE_OPIMM, "0000000" & C_FUNCT3_OPIMM_SLTI, x"2A5A5A5A", x"1A5A5A5A", x"00000000", x"00000000",  1), ( 1, x"00000001")),
+    ((C_OPCODE_OPIMM, "0000000" & C_FUNCT3_OPIMM_SLTI, x"00000001", x"00000000", x"00000000", x"00000000",  1), ( 1, x"00000001")),
+    ((C_OPCODE_OPIMM, "0000000" & C_FUNCT3_OPIMM_SLTI, x"00000001", x"00000001", x"00000000", x"00000000",  1), ( 1, x"00000000")),
+    ((C_OPCODE_OPIMM, "0000000" & C_FUNCT3_OPIMM_SLTI, x"00000000", x"00000001", x"00000000", x"00000000",  1), ( 1, x"00000000")),
+    ((C_OPCODE_OPIMM, "0000000" & C_FUNCT3_OPIMM_SLTI, x"7FFFFFFF", x"0FFFFFFF", x"00000000", x"00000000",  1), ( 1, x"00000001")),
+    ((C_OPCODE_OPIMM, "0000000" & C_FUNCT3_OPIMM_SLTIU, x"00000000", x"00000000", x"00000000", x"00000000",  1), ( 1, x"00000000")),
+    ((C_OPCODE_OPIMM, "0000000" & C_FUNCT3_OPIMM_SLTIU, x"00000001", x"00000000", x"00000000", x"00000000",  1), ( 1, x"00000001")),
+    ((C_OPCODE_OPIMM, "0000000" & C_FUNCT3_OPIMM_SLTIU, x"00000001", x"00000001", x"00000000", x"00000000",  1), ( 1, x"00000000")),
+    ((C_OPCODE_OPIMM, "0000000" & C_FUNCT3_OPIMM_SLTIU, x"FFFFFFFF", x"00000000", x"00000000", x"00000000",  1), ( 1, x"00000001")),
+    ((C_OPCODE_OPIMM, "0000000" & C_FUNCT3_OPIMM_SLTIU, x"FA5A5A5A", x"1A5A5A5A", x"00000000", x"00000000",  1), ( 1, x"00000001")),
+
+
+    ((C_OPCODE_OPIMM, "0000000" & C_FUNCT3_OPIMM_SLTI, x"7FFFFFFF", x"FFFFFFFF", x"00000000", x"00000000",  1), ( 1, x"00000001"))
   );
 begin
   --  Component instantiation.
@@ -169,13 +185,12 @@ begin
     variable count   : integer := 0;
   begin
     if rising_edge(clk) then
-      info("Write En from ALU: " & std_logic'image(write_en));
       if write_en = '1' then
         -- check each value if possible
         if count < test_case'length then
           info("Read output from ALU: " & to_string(count));
-          check_equal(dest_result, test_case(count).outputs.dest_result);
-          check_equal(reg_dest_sel_alu, test_case(count).outputs.reg_dest_sel);
+          check_equal(dest_result, test_case(count).outputs.dest_result, result("for alu result"));
+          check_equal(reg_dest_sel_alu, test_case(count).outputs.reg_dest_sel, result("for dest sel"));
         end if;
         count := count + 1;
       end if;

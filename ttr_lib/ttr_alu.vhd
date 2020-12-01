@@ -52,8 +52,17 @@ begin
               when C_FUNCT3_OPIMM_ADDI =>
                 o_write_en    <= '1';
                 o_dest_result <= std_logic_vector(resize(signed(i_src1_data) + signed(i_immediate), C_XLEN));
-              when others =>
 
+              when C_FUNCT3_OPIMM_SLTI =>
+                o_write_en    <= '1';
+                o_dest_result <= (0=>'1', others=>'0') when   signed(i_src1_data) <   signed(i_immediate) else (others=>'0');
+
+              when C_FUNCT3_OPIMM_SLTIU =>
+                o_write_en    <= '1';
+                o_dest_result <= (0=>'1', others=>'0') when unsigned(i_src1_data) < unsigned(i_immediate) else (others=>'0');
+
+              when others =>
+                null;
             end case;
           when C_OPCODE_LUI|C_OPCODE_AUIPC  =>
 

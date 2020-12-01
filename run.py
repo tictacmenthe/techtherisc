@@ -5,9 +5,21 @@ import sys
 import os
 from vunit import VUnit
 
+class bcolors:
+    OKBLUE = '\033[94m'
+    OKCYAN = '\033[96m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+
 SOURCES_FILE = "./sources.conf"
 
+
 # Construct the new argv from input argv by finding the files to use in test (with wildcards pattern matching)
+print("\n==== "+ bcolors.BOLD +"Setting up arguments for Vunit"+ bcolors.ENDC +" ==========")
 copy_argv = sys.argv[1:] # copy of argv without the current filename
 final_argv = [] # The argv list that will be used with VUnit
 waves = []  # List of files for which to show a wave with specific a gtkwave savefile
@@ -47,10 +59,12 @@ final_argv+=['--gtkwave-fmt', 'ghw']
 
 # Callback called to show graphs if possible. Used because vu.main() doesn't return for some reason.
 def show_waves(results):
+  if waves:
+    print("\n==== "+ bcolors.WARNING +"Running GTKWave when possible"+ bcolors.ENDC +" ===========")
   for wave in waves:
-    print(f"Running 'gtkwave {wave}'.")
+    print(f'\nRunning "gtkwave {wave}".')
     res = subprocess.call(['gtkwave', wave], stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
-    print("GTKWave subprocess returned", res)
+    print("GTKWave subprocess returned:", res)
 
 
 # Init VUnit with the arguments.
@@ -61,6 +75,7 @@ vu.enable_location_preprocessing()
 
 
 # Read source files from sources configuration file
+print("\n==== "+ bcolors.BOLD +"Setting up VUnit project structure "+ bcolors.ENDC +"======")
 libraries_dict = {}
 with open(SOURCES_FILE) as sources_file:
   for line in sources_file:
@@ -80,10 +95,10 @@ vu_libraries = []
 for n, k in enumerate(libraries_dict.keys()):
   # Create VUnit vu_libraries
   vu_libraries.append(vu.add_library(k))
-  print(f'\nCreated library "{k}".')
+  print(f'\n== Library "{k}"\n== Files:')
   # Add source files to each library
   for f in libraries_dict[k]:
-    print(f'Adding file "{f}".')
+    print(f'==== "{f}"')
     vu_libraries[n].add_source_file(f)
 
 # Display delta cycles too in logs. Requires preprocessing enabled AND GHDL.
@@ -92,4 +107,5 @@ if "--dt" in copy_argv:
 
 # Run the VUnit framework. Doesn't return, ever.
 #    show_waves is a callback called after the tests (for graphs, coverage, logs).
+print("\n==== "+ bcolors.BOLD + bcolors.OKCYAN +"Running VUnit"+ bcolors.ENDC +" ===========================")
 vu.main(show_waves)
