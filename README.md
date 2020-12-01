@@ -1,4 +1,4 @@
-# techtherisc
+# TechTheRISC
 Simple RISCV-32-I/E implementation in VHDL
 
 ## Dependencies
