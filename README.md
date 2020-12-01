@@ -2,7 +2,7 @@
 Simple RISCV implementation in VHDL
 
 ## Dependencies
-- GHDL v0.37+
+- GHDL v0.37+ (any framework:llvm/gcc/mcode). Could work with others (vsim...), not tested.
 - Python3 (works on 3.9.0, doesn't really require much)
 - vunit-hdl v4.4.0+ (from Python pip)
 - GTKWave v3.3.100+ (for GUI wave visualization)
@@ -23,3 +23,7 @@ Some options:
   If there are no savefiles, just opens GTKWave without any save data
 - Every other VUnit CLI arguments are available (-v for verbose mode, etc).
 
+## Modifying
+
+- Sources files and libraries are specified in the sources.conf file at the root of the project. The syntax is inside and fairly simple for now.
+- That's about it.

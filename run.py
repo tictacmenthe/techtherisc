@@ -1,26 +1,25 @@
-#!python
+#!/usr/bin/python
 import subprocess
 import glob
 import sys
 import os
 from vunit import VUnit
 
-copy_argv = sys.argv[1:]
-
-final_argv = []
-
-waves = []
-
-gui_request = any(x in copy_argv for x in ['-g', '--gui'])
-
+SOURCES_FILE = "./sources.conf"
 
 # Construct the new argv from input argv by finding the files to use in test (with wildcards pattern matching)
+copy_argv = sys.argv[1:] # copy of argv without the current filename
+final_argv = [] # The argv list that will be used with VUnit
+waves = []  # List of files for which to show a wave with specific a gtkwave savefile
+gui_request = any(x in copy_argv for x in ['-g', '--gui']) # if a graph was asked or not
+
+# filter arguments a bit, format source files/tb.
 for arg in copy_argv:
   found = glob.glob('test_lib/*'+arg+'*.vhd')
   if found: # If the pattern matches a .vhd file in test_lib
      # TB pattern for VUnit, with wildcards to run all test cases for this TB
     final_argv.append('*'+arg+'*')
-  else: # else, add it raw if not -g
+  else: # else, add it raw if not a custom parameter
     if arg not in ['-g', '--gui', '--dt']:
       final_argv.append(arg)
 
@@ -45,31 +44,52 @@ else:
 # force gtkwave files to be generated, even if not openned with GUI
 final_argv+=['--gtkwave-fmt', 'ghw']
 
+
+# Callback called to show graphs if possible. Used because vu.main() doesn't return for some reason.
 def show_waves(results):
   for wave in waves:
     print(f"Running 'gtkwave {wave}'.")
     res = subprocess.call(['gtkwave', wave], stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
     print("GTKWave subprocess returned", res)
 
+
+# Init VUnit with the arguments.
 vu = VUnit.from_argv(argv=final_argv)
 
+# Enables some preprocessing (to print lines for logs, allow delta-cycle logs etc).
 vu.enable_location_preprocessing()
 
-src_lib = vu.add_library("src_lib")
-tool_lib = vu.add_library("tool_lib")
-test_lib = vu.add_library("test_lib")
 
-src_lib.add_source_files(src_lib.name+"/utility_pkg.vhd")
-src_lib.add_source_files(src_lib.name+"/ttr_pkg.vhd")
-src_lib.add_source_files(src_lib.name+"/ttr_registers.vhd")
-src_lib.add_source_files(src_lib.name+"/ttr_decoder.vhd")
-src_lib.add_source_files(src_lib.name+"/ttr_alu.vhd")
-test_lib.add_source_files(test_lib.name+"/reg_tb.vhd")
-test_lib.add_source_files(test_lib.name+"/instr_tb.vhd")
-test_lib.add_source_files(test_lib.name+"/alu_tb.vhd")
+# Read source files from sources configuration file
+libraries_dict = {}
+with open(SOURCES_FILE) as sources_file:
+  for line in sources_file:
+    line = line.split("#")[0].strip()
+    if line:
+      tokens = line.split()
+      if len(tokens) > 1:
+        libname, filename = tokens[0], os.path.join(tokens[0], tokens[1])
+        if libname in libraries_dict.keys():
+          if filename not in libraries_dict[libname]:
+            libraries_dict[libname].append(filename)
+        else:
+          libraries_dict[libname] = [filename]
 
-# Display delta time too in logs
+# Setup file structure for VUnit.
+vu_libraries = []
+for n, k in enumerate(libraries_dict.keys()):
+  # Create VUnit vu_libraries
+  vu_libraries.append(vu.add_library(k))
+  print(f'\nCreated library "{k}".')
+  # Add source files to each library
+  for f in libraries_dict[k]:
+    print(f'Adding file "{f}".')
+    vu_libraries[n].add_source_file(f)
+
+# Display delta cycles too in logs. Requires preprocessing enabled AND GHDL.
 if "--dt" in copy_argv:
   vu.set_sim_option("ghdl.sim_flags", ["--disp-time"])
 
+# Run the VUnit framework. Doesn't return, ever.
+#    show_waves is a callback called after the tests (for graphs, coverage, logs).
 vu.main(show_waves)

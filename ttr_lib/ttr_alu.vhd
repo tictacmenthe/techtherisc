@@ -2,9 +2,9 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
-library src_lib;
-use src_lib.ttr_pkg.all;
-use src_lib.utility_pkg.all;
+library ttr_lib;
+use ttr_lib.ttr_pkg.all;
+use ttr_lib.utility_pkg.all;
 
 entity ttr_alu is
   port(

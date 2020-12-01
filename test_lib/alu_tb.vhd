@@ -8,8 +8,8 @@ use ieee.numeric_std.all;
 library std;
 use std.textio.all;
 
-library src_lib;
-use src_lib.ttr_pkg.all;
+library ttr_lib;
+use ttr_lib.ttr_pkg.all;
 
 --  A testbench has no ports.
 entity alu_tb is
@@ -86,7 +86,7 @@ architecture testbench of alu_tb is
   );
 begin
   --  Component instantiation.
-  i_dut: entity src_lib.ttr_alu
+  i_dut: entity ttr_lib.ttr_alu
     port map (
       clk             => clk,
       rst             => rst,

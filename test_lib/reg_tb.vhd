@@ -8,8 +8,8 @@ use ieee.numeric_std.all;
 library std;
 use std.textio.all;
 
-library src_lib;
-use src_lib.ttr_pkg.all;
+library ttr_lib;
+use ttr_lib.ttr_pkg.all;
 
 --  A testbench has no ports.
 entity reg_tb is
@@ -47,7 +47,7 @@ architecture testbench of reg_tb is
 
 begin
   --  Component instantiation.
-  i_dut: entity src_lib.ttr_registers
+  i_dut: entity ttr_lib.ttr_registers
     generic map(
       G_XLEN => C_XLEN,
       G_NREG => C_NREG
