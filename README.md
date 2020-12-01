@@ -1,5 +1,5 @@
-# techtherisc
-Simple RISCV implementation in VHDL
+# TechTheRISC
+Simple RISCV-32-I/E implementation in VHDL
 
 ## Dependencies
 - GHDL v0.37+ (any framework:llvm/gcc/mcode). Could work with others (vsim...), not tested.
