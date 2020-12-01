@@ -49,6 +49,10 @@ package ttr_pkg is
   -- I_imm
   subtype R_IMM_I   is natural range 31 downto 20;
   constant C_IMM_I_W : natural := R_IMM_I'high - R_IMM_I'low + 1;
+  
+  -- I_imm shift amount
+  subtype R_I_SHAMT is natural range 4 downto 0;
+  constant C_I_SR_SIGNED : natural := 10; -- bit 10 of immediate for shift right determines if the sign bit is shifted
 
   -- S_imm
   subtype R_IMM_S_1 is natural range 31 downto 25;
@@ -60,6 +64,8 @@ package ttr_pkg is
   subtype R_IMM_B_0 is natural range 11 downto  8;
   -- U_imm
   subtype R_IMM_U   is natural range 31 downto 12;
+  constant C_IMM_U_W : natural := R_IMM_U'high - R_IMM_U'low + 1;
+
   -- J_imm
   subtype R_IMM_J_3 is natural range 31 downto 31;
   subtype R_IMM_J_2 is natural range 19 downto 12;
@@ -84,9 +90,9 @@ package ttr_pkg is
   constant C_FUNCT3_OPIMM_ORI   : funct3_t := "110";
   constant C_FUNCT3_OPIMM_XORI  : funct3_t := "100";
 
-  constant C_FUNCT3_OPIMM_SLLI  : funct3_t := "001";
-  constant C_FUNCT3_OPIMM_SRLI  : funct3_t := "101";
-  constant C_FUNCT3_OPIMM_SRAI  : funct3_t := "101"; -- bit 30 is 1 too
+  constant C_FUNCT3_OPIMM_SLI  : funct3_t := "001";
+  constant C_FUNCT3_OPIMM_SRI  : funct3_t := "101";
+
 
   -- Subtypes for ports
   subtype reg_t is std_logic_vector(C_XLEN-1 downto 0);       -- Register

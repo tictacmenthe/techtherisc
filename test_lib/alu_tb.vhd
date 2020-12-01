@@ -25,10 +25,10 @@ architecture testbench of alu_tb is
     target <= not target;
     wait for pulse_width;
     target <= not target;
-  end procedure do_pulse;  
+  end procedure do_pulse;
 
   function to_int(in_slv : std_logic_vector) return integer is
-    variable in_int: integer := to_integer(signed(in_slv)); 
+    variable in_int: integer := to_integer(signed(in_slv));
   begin
     return in_int;
   end function to_int;
@@ -57,7 +57,7 @@ architecture testbench of alu_tb is
 
   signal pc_to_write    : reg_t := (others=>'0');
   signal alu_f          : funct_t;
-  
+
   type dut_in_t is record
     opcode        : opcode_t;
     alu_f         : funct_t;
@@ -77,12 +77,15 @@ architecture testbench of alu_tb is
     inputs  : dut_in_t;
     outputs : dut_out_t;
   end record dut_case_r;
-  
+
   type test_array_t is array(natural range <>) of dut_case_r;
+  -- Big fat array of test cases for ALU operations
   constant test_case : test_array_t := (
+    -- ADD signed immediate
     ((C_OPCODE_OPIMM, "0000000" & C_FUNCT3_OPIMM_ADDI, x"00000010", x"0000001F", x"00000000", x"00000000",  1), ( 1, x"0000002F")),
     ((C_OPCODE_OPIMM, "0000000" & C_FUNCT3_OPIMM_ADDI, x"00000001", x"FFFFFFFF", x"00000000", x"00000000",  1), ( 1, x"00000000")),
     ((C_OPCODE_OPIMM, "0000000" & C_FUNCT3_OPIMM_ADDI, x"00000001", x"FFFFFFFF", x"00000000", x"00000000", 15), (15, x"00000000")),
+    -- SLTI : dest = 1 if signed rs1 strictly lower than signed immediate
     ((C_OPCODE_OPIMM, "0000000" & C_FUNCT3_OPIMM_SLTI, x"2A5A5A5A", x"1A5A5A5A", x"BABABABA", x"00000000",  1), ( 1, x"00000001")),
     ((C_OPCODE_OPIMM, "0000000" & C_FUNCT3_OPIMM_SLTI, x"2A5A5A5A", x"1A5A5A5A", x"00000000", x"00000000",  1), ( 1, x"00000001")),
     ((C_OPCODE_OPIMM, "0000000" & C_FUNCT3_OPIMM_SLTI, x"FA5A5A5A", x"1A5A5A5A", x"00000000", x"00000000",  1), ( 1, x"00000000")),
@@ -91,11 +94,54 @@ architecture testbench of alu_tb is
     ((C_OPCODE_OPIMM, "0000000" & C_FUNCT3_OPIMM_SLTI, x"00000001", x"00000001", x"00000000", x"00000000",  1), ( 1, x"00000000")),
     ((C_OPCODE_OPIMM, "0000000" & C_FUNCT3_OPIMM_SLTI, x"00000000", x"00000001", x"00000000", x"00000000",  1), ( 1, x"00000000")),
     ((C_OPCODE_OPIMM, "0000000" & C_FUNCT3_OPIMM_SLTI, x"7FFFFFFF", x"0FFFFFFF", x"00000000", x"00000000",  1), ( 1, x"00000001")),
-    ((C_OPCODE_OPIMM, "0000000" & C_FUNCT3_OPIMM_SLTIU, x"00000000", x"00000000", x"00000000", x"00000000",  1), ( 1, x"00000000")),
-    ((C_OPCODE_OPIMM, "0000000" & C_FUNCT3_OPIMM_SLTIU, x"00000001", x"00000000", x"00000000", x"00000000",  1), ( 1, x"00000001")),
-    ((C_OPCODE_OPIMM, "0000000" & C_FUNCT3_OPIMM_SLTIU, x"00000001", x"00000001", x"00000000", x"00000000",  1), ( 1, x"00000000")),
-    ((C_OPCODE_OPIMM, "0000000" & C_FUNCT3_OPIMM_SLTIU, x"FFFFFFFF", x"00000000", x"00000000", x"00000000",  1), ( 1, x"00000001")),
-    ((C_OPCODE_OPIMM, "0000000" & C_FUNCT3_OPIMM_SLTIU, x"FA5A5A5A", x"1A5A5A5A", x"00000000", x"00000000",  1), ( 1, x"00000001")),
+    -- SLTI : dest = 1 if unsigned rs1 strictly lower than unsigned (but sign extended immediate)
+    ((C_OPCODE_OPIMM, "0000000" & C_FUNCT3_OPIMM_SLTIU, x"00000000", x"00000000", x"00000000", x"00000000", 1), ( 1, x"00000000")),
+    ((C_OPCODE_OPIMM, "0000000" & C_FUNCT3_OPIMM_SLTIU, x"00000001", x"00000000", x"00000000", x"00000000", 1), ( 1, x"00000001")),
+    ((C_OPCODE_OPIMM, "0000000" & C_FUNCT3_OPIMM_SLTIU, x"00000001", x"00000001", x"00000000", x"00000000", 1), ( 1, x"00000000")),
+    ((C_OPCODE_OPIMM, "0000000" & C_FUNCT3_OPIMM_SLTIU, x"FFFFFFFF", x"00000000", x"00000000", x"00000000", 1), ( 1, x"00000001")),
+    ((C_OPCODE_OPIMM, "0000000" & C_FUNCT3_OPIMM_SLTIU, x"FA5A5A5A", x"1A5A5A5A", x"00000000", x"00000000", 1), ( 1, x"00000001")),
+    -- ANDI : dest = rs1 and sign extended immediate
+    ((C_OPCODE_OPIMM, "0000000" & C_FUNCT3_OPIMM_ANDI, x"00000000", x"A5A5A5A5", x"00000000", x"00000000",  1), ( 1, x"00000000")),
+    ((C_OPCODE_OPIMM, "0000000" & C_FUNCT3_OPIMM_ANDI, x"A5A5A5A5", x"00000000", x"00000000", x"00000000",  1), ( 1, x"00000000")),
+    ((C_OPCODE_OPIMM, "0000000" & C_FUNCT3_OPIMM_ANDI, x"A0A0A0A0", x"A5A5A5A5", x"00000000", x"00000000",  1), ( 1, x"A0A0A0A0")),
+    ((C_OPCODE_OPIMM, "0000000" & C_FUNCT3_OPIMM_ANDI, x"00000505", x"A5A5A5A5", x"00000000", x"00000000",  1), ( 1, x"00000505")),
+    -- ORI : dest = rs1 or sign extended immediate
+    ((C_OPCODE_OPIMM, "0000000" & C_FUNCT3_OPIMM_ORI,  x"00000000", x"A5A5A5A5", x"00000000", x"00000000",  1), ( 1, x"A5A5A5A5")),
+    ((C_OPCODE_OPIMM, "0000000" & C_FUNCT3_OPIMM_ORI,  x"A5A5A5A5", x"00000000", x"00000000", x"00000000",  1), ( 1, x"A5A5A5A5")),
+    ((C_OPCODE_OPIMM, "0000000" & C_FUNCT3_OPIMM_ORI,  x"A0A0A0A0", x"05050505", x"00000000", x"00000000",  1), ( 1, x"A5A5A5A5")),
+    ((C_OPCODE_OPIMM, "0000000" & C_FUNCT3_OPIMM_ORI,  x"00000505", x"A5A50000", x"00000000", x"00000000",  1), ( 1, x"A5A50505")),
+    -- XORI : dest = rs1 xor sign extended immediate
+    ((C_OPCODE_OPIMM, "0000000" & C_FUNCT3_OPIMM_XORI, x"00000000", x"A5A5A5A5", x"00000000", x"00000000",  1), ( 1, x"A5A5A5A5")),
+    ((C_OPCODE_OPIMM, "0000000" & C_FUNCT3_OPIMM_XORI, x"A5A5A5A5", x"00000000", x"00000000", x"00000000",  1), ( 1, x"A5A5A5A5")),
+    ((C_OPCODE_OPIMM, "0000000" & C_FUNCT3_OPIMM_XORI, x"FFFFFFFF", x"A5A5A5A5", x"00000000", x"00000000",  1), ( 1, x"5A5A5A5A")),
+    ((C_OPCODE_OPIMM, "0000000" & C_FUNCT3_OPIMM_XORI, x"05050505", x"A5A5A5A5", x"00000000", x"00000000",  1), ( 1, x"A0A0A0A0")),
+    -- SLLI : logical left shift by immediate
+    ((C_OPCODE_OPIMM, "0000000" & C_FUNCT3_OPIMM_SLI, x"00000001", x"00000001", x"00000000", x"00000000",  1), ( 1, x"00000002")),
+    ((C_OPCODE_OPIMM, "0000000" & C_FUNCT3_OPIMM_SLI, x"0000001F", x"00000001", x"00000000", x"00000000",  1), ( 1, x"80000000")),
+    ((C_OPCODE_OPIMM, "0000000" & C_FUNCT3_OPIMM_SLI, x"00000001", x"AAAAAAAA", x"00000000", x"00000000",  1), ( 1, x"55555554")),
+    ((C_OPCODE_OPIMM, "0000000" & C_FUNCT3_OPIMM_SLI, x"00000002", x"55555555", x"00000000", x"00000000",  1), ( 1, x"55555554")),
+    -- SRLI : logical right shift by immediate (as unsigned)
+    ((C_OPCODE_OPIMM, "0000000" & C_FUNCT3_OPIMM_SRI, x"00000001", x"00000001", x"00000000", x"00000000",  1), ( 1, x"00000000")),
+    ((C_OPCODE_OPIMM, "0000000" & C_FUNCT3_OPIMM_SRI, x"00000001", x"80000000", x"00000000", x"00000000",  1), ( 1, x"40000000")),
+    ((C_OPCODE_OPIMM, "0000000" & C_FUNCT3_OPIMM_SRI, x"0000001F", x"80000000", x"00000000", x"00000000",  1), ( 1, x"00000001")),
+    ((C_OPCODE_OPIMM, "0000000" & C_FUNCT3_OPIMM_SRI, x"00000001", x"AAAAAAAA", x"00000000", x"00000000",  1), ( 1, x"55555555")),
+    ((C_OPCODE_OPIMM, "0000000" & C_FUNCT3_OPIMM_SRI, x"00000002", x"55555555", x"00000000", x"00000000",  1), ( 1, x"15555555")),
+    -- SRAI : arthmetic right shift by immediate (as signed) if bit 10 of immediate is '1'
+    ((C_OPCODE_OPIMM, "0000000" & C_FUNCT3_OPIMM_SRI, x"00000401", x"00000001", x"00000000", x"00000000",  1), ( 1, x"00000000")),
+    ((C_OPCODE_OPIMM, "0000000" & C_FUNCT3_OPIMM_SRI, x"00000401", x"80000000", x"00000000", x"00000000",  1), ( 1, x"C0000000")),
+    ((C_OPCODE_OPIMM, "0000000" & C_FUNCT3_OPIMM_SRI, x"0000041F", x"80000000", x"00000000", x"00000000",  1), ( 1, x"FFFFFFFF")),
+    ((C_OPCODE_OPIMM, "0000000" & C_FUNCT3_OPIMM_SRI, x"00000401", x"AAAAAAAA", x"00000000", x"00000000",  1), ( 1, x"D5555555")),
+    ((C_OPCODE_OPIMM, "0000000" & C_FUNCT3_OPIMM_SRI, x"00000402", x"55555555", x"00000000", x"00000000",  1), ( 1, x"15555555")),
+    ((C_OPCODE_OPIMM, "0000000" & C_FUNCT3_OPIMM_SRI, x"00000402", x"D5555555", x"00000000", x"00000000",  1), ( 1, x"F5555555")),
+    -- LUI : Load upper immediate
+    ((C_OPCODE_LUI,   "0000000000",                   x"AAAAAAAA", x"00000000", x"00000000", x"00000000",  1), ( 1, x"AAAAA000")),
+    ((C_OPCODE_LUI,   "0000000000",                   x"55555555", x"00000000", x"00000000", x"00000000",  1), ( 1, x"55555000")),
+    -- LUI : Load upper immediate
+    ((C_OPCODE_AUIPC, "0000000000",                   x"AAAAAAAA", x"00000000", x"00000000", x"00000000",  1), ( 1, x"AAAAA000")),
+    ((C_OPCODE_AUIPC, "0000000000",                   x"AAAAAAAA", x"00000000", x"00000000", x"00000AAA",  1), ( 1, x"AAAAAAAA")),
+    ((C_OPCODE_AUIPC, "0000000000",                   x"55555555", x"00000000", x"00000000", x"00000123",  1), ( 1, x"55555123")),
+    ((C_OPCODE_AUIPC, "0000000000",                   x"55555555", x"00000000", x"00000000", x"00000555",  1), ( 1, x"55555555")),
+    ((C_OPCODE_AUIPC, "0000000000",                   x"00000001", x"00000000", x"00000000", x"FFFFF123",  1), ( 1, x"00000123")),
 
 
     ((C_OPCODE_OPIMM, "0000000" & C_FUNCT3_OPIMM_SLTI, x"7FFFFFFF", x"FFFFFFFF", x"00000000", x"00000000",  1), ( 1, x"00000001"))
@@ -108,7 +154,7 @@ begin
       rst             => rst,
 
       i_en            => en,
-          
+
       i_opcode        => opcode,
       i_alu_f         => alu_f,
       i_immediate     => immediate,
@@ -120,7 +166,7 @@ begin
       i_reg_dest_sel  => reg_dest_sel_dec,
       o_reg_dest_sel  => reg_dest_sel_alu,
       o_dest_result   => dest_result,
-      o_write_en      => write_en    
+      o_write_en      => write_en
     );
 
   -- clk generation process
@@ -134,7 +180,7 @@ begin
       wait until tb_en_clk = '1';
     end if;
   end process p_clk_rst;
-  
+
   -- TB process
   p_tb_main: process
   begin
@@ -164,7 +210,7 @@ begin
       src2_data         <= test_case(i).inputs.src2_data;
       pc_to_write       <= test_case(i).inputs.pc_to_write;
       reg_dest_sel_dec  <= test_case(i).inputs.reg_dest_sel;
-      info("Write number " & to_string(i));
+      info("Write number " & to_string(i+1) & "/" & to_string(test_case'length));
       wait until rising_edge(clk);
     end loop;
 
@@ -172,7 +218,7 @@ begin
     alu_f     <= (others=>'0');
     info("Write null instruction");
     wait until rising_edge(clk);
-  
+
     en        <= '0';
     wait for C_RST_WIDTH;
     info("Tested " & integer'image(test_case'length) & " cases.");
@@ -188,7 +234,7 @@ begin
       if write_en = '1' then
         -- check each value if possible
         if count < test_case'length then
-          info("Read output from ALU: " & to_string(count));
+          info("Read output from ALU: " & to_string(count+1) & "/" & to_string(test_case'length));
           check_equal(dest_result, test_case(count).outputs.dest_result, result("for alu result"));
           check_equal(reg_dest_sel_alu, test_case(count).outputs.reg_dest_sel, result("for dest sel"));
         end if;

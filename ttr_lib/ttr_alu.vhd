@@ -1,3 +1,6 @@
+library vunit_lib;
+context vunit_lib.vunit_context;
+
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
@@ -10,14 +13,14 @@ entity ttr_alu is
   port(
     clk             : in  std_logic;  -- system clock
     rst             : in  std_logic;  -- active high reset
-    
+
     i_en            : in  std_logic;  -- if '0', ignores all inputs and disables output
 
     -- Instruction to execute
     i_opcode        : in  opcode_t;   -- decoded opcode
     i_alu_f         : in  funct_t;    -- ALU function code
     i_immediate     : in  reg_t;      -- extracted immediate value
-    
+
     -- Register data
     i_pc_to_write   : in  reg_t;      -- PC value to write if needed
     i_src1_data     : in  reg_t;      -- register src1 data
@@ -52,29 +55,56 @@ begin
               when C_FUNCT3_OPIMM_ADDI =>
                 o_write_en    <= '1';
                 o_dest_result <= std_logic_vector(resize(signed(i_src1_data) + signed(i_immediate), C_XLEN));
-
               when C_FUNCT3_OPIMM_SLTI =>
                 o_write_en    <= '1';
                 o_dest_result <= (0=>'1', others=>'0') when   signed(i_src1_data) <   signed(i_immediate) else (others=>'0');
-
               when C_FUNCT3_OPIMM_SLTIU =>
                 o_write_en    <= '1';
                 o_dest_result <= (0=>'1', others=>'0') when unsigned(i_src1_data) < unsigned(i_immediate) else (others=>'0');
 
+              when C_FUNCT3_OPIMM_ANDI =>
+                o_write_en    <= '1';
+                o_dest_result <= i_src1_data and i_immediate;
+              when C_FUNCT3_OPIMM_ORI =>
+                o_write_en    <= '1';
+                o_dest_result <= i_src1_data or i_immediate;
+              when C_FUNCT3_OPIMM_XORI =>
+                o_write_en    <= '1';
+                o_dest_result <= i_src1_data xor i_immediate;
+
+              when C_FUNCT3_OPIMM_SLI =>
+                o_write_en    <= '1';
+                o_dest_result <= std_logic_vector(shift_left(signed(i_src1_data), to_integer(unsigned(i_immediate(R_I_SHAMT)))));
+              when C_FUNCT3_OPIMM_SRI =>
+                o_write_en    <= '1';
+                if i_immediate(C_I_SR_SIGNED) = '1' then
+                  info("SIGNED");
+                  o_dest_result <= std_logic_vector(shift_right(signed(i_src1_data), to_integer(unsigned(i_immediate(R_I_SHAMT)))));
+                else
+                  info("UNSIGNED");
+                  o_dest_result <= std_logic_vector(shift_right(unsigned(i_src1_data), to_integer(unsigned(i_immediate(R_I_SHAMT)))));
+                end if;
+
               when others =>
                 null;
             end case;
-          when C_OPCODE_LUI|C_OPCODE_AUIPC  =>
-
-          when C_OPCODE_OP    =>
+          when C_OPCODE_LUI     =>
+            o_write_en    <= '1';
+            o_dest_result <= std_logic_vector(shift_left(signed(i_immediate), o_dest_result'length-C_IMM_U_W));
+            
+          when C_OPCODE_AUIPC   =>
+            o_write_en    <= '1';
+            o_dest_result <= std_logic_vector(shift_left(signed(i_immediate), o_dest_result'length-C_IMM_U_W) + signed(i_pc_to_write));
           
-          when C_OPCODE_JAL       => 
-          
-          when C_OPCODE_JALR      => 
+          when C_OPCODE_OP      =>
 
-          when C_OPCODE_BRANCH    =>
+          when C_OPCODE_JAL     =>
 
-          when C_OPCODE_SYSTEM   =>
+          when C_OPCODE_JALR    =>
+
+          when C_OPCODE_BRANCH  =>
+
+          when C_OPCODE_SYSTEM  =>
 
           when others =>            -- invalid opcode
 
