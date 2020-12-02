@@ -22,7 +22,8 @@ entity ttr_alu is
     i_immediate     : in  reg_t;      -- extracted immediate value
 
     -- Register data
-    i_pc_to_write   : in  reg_t;      -- PC value to write if needed
+    i_pc_current    : in  reg_t;      -- current PC value (for JAL)
+
     i_src1_data     : in  reg_t;      -- register src1 data
     i_src2_data     : in  reg_t;      -- register src2 data
     i_reg_dest_sel  : in  reg_sel_t;  -- destination register selection from decoder
@@ -52,36 +53,34 @@ begin
         case i_opcode is
           when C_OPCODE_OPIMM =>
             case funct3_i is
-              when C_FUNCT3_OPIMM_ADDI =>
+              when C_FUNCT3_ADD_SUB =>
                 o_write_en    <= '1';
                 o_dest_result <= std_logic_vector(resize(signed(i_src1_data) + signed(i_immediate), C_XLEN));
-              when C_FUNCT3_OPIMM_SLTI =>
+              when C_FUNCT3_SLT =>
                 o_write_en    <= '1';
                 o_dest_result <= (0=>'1', others=>'0') when   signed(i_src1_data) <   signed(i_immediate) else (others=>'0');
-              when C_FUNCT3_OPIMM_SLTIU =>
+              when C_FUNCT3_SLTU =>
                 o_write_en    <= '1';
                 o_dest_result <= (0=>'1', others=>'0') when unsigned(i_src1_data) < unsigned(i_immediate) else (others=>'0');
 
-              when C_FUNCT3_OPIMM_ANDI =>
+              when C_FUNCT3_AND =>
                 o_write_en    <= '1';
                 o_dest_result <= i_src1_data and i_immediate;
-              when C_FUNCT3_OPIMM_ORI =>
+              when C_FUNCT3_OR =>
                 o_write_en    <= '1';
                 o_dest_result <= i_src1_data or i_immediate;
-              when C_FUNCT3_OPIMM_XORI =>
+              when C_FUNCT3_XOR =>
                 o_write_en    <= '1';
                 o_dest_result <= i_src1_data xor i_immediate;
 
-              when C_FUNCT3_OPIMM_SLI =>
+              when C_FUNCT3_SLL =>
                 o_write_en    <= '1';
                 o_dest_result <= std_logic_vector(shift_left(signed(i_src1_data), to_integer(unsigned(i_immediate(R_I_SHAMT)))));
-              when C_FUNCT3_OPIMM_SRI =>
+              when C_FUNCT3_SR =>
                 o_write_en    <= '1';
                 if i_immediate(C_I_SR_SIGNED) = '1' then
-                  info("SIGNED");
                   o_dest_result <= std_logic_vector(shift_right(signed(i_src1_data), to_integer(unsigned(i_immediate(R_I_SHAMT)))));
                 else
-                  info("UNSIGNED");
                   o_dest_result <= std_logic_vector(shift_right(unsigned(i_src1_data), to_integer(unsigned(i_immediate(R_I_SHAMT)))));
                 end if;
 
@@ -94,20 +93,55 @@ begin
             
           when C_OPCODE_AUIPC   =>
             o_write_en    <= '1';
-            o_dest_result <= std_logic_vector(shift_left(signed(i_immediate), o_dest_result'length-C_IMM_U_W) + signed(i_pc_to_write));
+            o_dest_result <= std_logic_vector(shift_left(signed(i_immediate), o_dest_result'length-C_IMM_U_W) + signed(i_pc_current));
           
           when C_OPCODE_OP      =>
+            case funct3_i is
+              when C_FUNCT3_ADD_SUB =>
+                o_write_en    <= '1';
+                if i_alu_f(C_FUNCT_SUB_BIT) = '0' then
+                  o_dest_result <= std_logic_vector(resize(signed(i_src1_data) + signed(i_src2_data), C_XLEN));
+                else
+                  o_dest_result <= std_logic_vector(resize(signed(i_src1_data) - signed(i_src2_data), C_XLEN));
+                end if;
+              when C_FUNCT3_SLT =>
+                o_write_en    <= '1';
+                o_dest_result <= (0=>'1', others=>'0') when   signed(i_src1_data) <   signed(i_src2_data) else (others=>'0');
+              when C_FUNCT3_SLTU =>
+                o_write_en    <= '1';
+                o_dest_result <= (0=>'1', others=>'0') when unsigned(i_src1_data) < unsigned(i_src2_data) else (others=>'0');
 
-          when C_OPCODE_JAL     =>
+              when C_FUNCT3_AND =>
+                o_write_en    <= '1';
+                o_dest_result <= i_src1_data and i_src2_data;
+              when C_FUNCT3_OR =>
+                o_write_en    <= '1';
+                o_dest_result <= i_src1_data or i_src2_data;
+              when C_FUNCT3_XOR =>
+                o_write_en    <= '1';
+                o_dest_result <= i_src1_data xor i_src2_data;
 
-          when C_OPCODE_JALR    =>
+              when C_FUNCT3_SLL =>
+                o_write_en    <= '1';
+                o_dest_result <= std_logic_vector(shift_left(signed(i_src1_data), to_integer(unsigned(i_src2_data(R_I_SHAMT)))));
+              when C_FUNCT3_SR =>
+                o_write_en    <= '1';
+                if i_alu_f(C_FUNCT_SR_SIGNED) = '1' then
+                  o_dest_result <= std_logic_vector(shift_right(signed(i_src1_data), to_integer(unsigned(i_src2_data(R_I_SHAMT)))));
+                else
+                  o_dest_result <= std_logic_vector(shift_right(unsigned(i_src1_data), to_integer(unsigned(i_src2_data(R_I_SHAMT)))));
+                end if;
 
-          when C_OPCODE_BRANCH  =>
+              when others =>
+                null;
+            end case;
 
-          when C_OPCODE_SYSTEM  =>
-
-          when others =>            -- invalid opcode
-
+          when C_OPCODE_JAL|C_OPCODE_JALR  =>
+            o_write_en    <= '1';
+            o_dest_result <= std_logic_vector(unsigned(i_pc_current) + 4);
+            
+          when others =>            -- invalid opcode or unrelated to ALU
+            null;
         end case;
       end if;
     end if;

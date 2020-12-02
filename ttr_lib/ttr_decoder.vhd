@@ -98,17 +98,20 @@ begin
                             i_instruction(R_IMM_J_3) & i_instruction(R_IMM_J_2) &
                             i_instruction(R_IMM_J_1) & i_instruction(R_IMM_J_0) & '0'
                           , C_XLEN);
+            report "BRANCHING NOT IMPLEMENTED ENTIRELY" severity warning;
 
           when C_OPCODE_JALR      => 
             o_alu_f     <= (others=>'0');
             o_immediate <= resize_slv(i_instruction(R_IMM_I), C_XLEN);
-
+            report "BRANCHING NOT IMPLEMENTED ENTIRELY" severity warning;
+            
           when C_OPCODE_BRANCH    =>
             o_alu_f     <= C_FUNC7_ZERO & funct3_i;
             o_immediate <=  resize_slv(
                             i_instruction(R_IMM_B_3) & i_instruction(R_IMM_B_2) &
                             i_instruction(R_IMM_B_1) & i_instruction(R_IMM_B_0) & '0'
                           , C_XLEN);
+            report "BRANCHING NOT IMPLEMENTED ENTIRELY" severity warning;
 
           when C_OPCODE_LOAD      =>
             o_mem_op_valid  <= '1';
@@ -128,9 +131,11 @@ begin
 
           when C_OPCODE_SYSTEM   => -- not implemented
             o_valid   <= '0';
+            report "BRANCHING NOT IMPLEMENTED ENTIRELY" severity warning;
 
           when others =>            -- invalid opcode
             o_valid   <= '0';
+            
         end case;
       end if;
     end if;

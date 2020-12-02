@@ -83,20 +83,27 @@ package ttr_pkg is
   constant C_MEM_STORE  : std_logic := '1';
 
   subtype funct3_t is std_logic_vector(C_FUNCT3_W-1 downto 0);
-  constant C_FUNCT3_OPIMM_ADDI  : funct3_t := "000";
-  constant C_FUNCT3_OPIMM_SLTI  : funct3_t := "010";
-  constant C_FUNCT3_OPIMM_SLTIU : funct3_t := "011";
-  constant C_FUNCT3_OPIMM_ANDI  : funct3_t := "111";
-  constant C_FUNCT3_OPIMM_ORI   : funct3_t := "110";
-  constant C_FUNCT3_OPIMM_XORI  : funct3_t := "100";
-
-  constant C_FUNCT3_OPIMM_SLI  : funct3_t := "001";
-  constant C_FUNCT3_OPIMM_SRI  : funct3_t := "101";
-
+  constant C_FUNCT3_ADD_SUB  : funct3_t := "000";
+  constant C_FUNCT_SUB_BIT   : natural  := 8;
+  constant C_FUNCT3_SLT      : funct3_t := "010";
+  constant C_FUNCT3_SLTU     : funct3_t := "011";
+  constant C_FUNCT3_AND      : funct3_t := "111";
+  constant C_FUNCT3_OR       : funct3_t := "110";
+  constant C_FUNCT3_XOR      : funct3_t := "100";
+  constant C_FUNCT3_SLL      : funct3_t := "001";
+  constant C_FUNCT3_SR       : funct3_t := "101";
+  constant C_FUNCT_SR_SIGNED : natural  := 8;
+  constant C_FUNCT3_BEQ      : funct3_t := "000";
+  constant C_FUNCT3_BNE      : funct3_t := "001";
+  constant C_FUNCT3_BLT      : funct3_t := "100";
+  constant C_FUNCT3_BLTU     : funct3_t := "110";
+  constant C_FUNCT3_BGE      : funct3_t := "101";
+  constant C_FUNCT3_BGEU     : funct3_t := "111";
+  
 
   -- Subtypes for ports
-  subtype reg_t is std_logic_vector(C_XLEN-1 downto 0);       -- Register
+  subtype reg_t     is std_logic_vector(C_XLEN-1 downto 0);       -- Register
   subtype reg_sel_t is integer range 0 to C_NREG-1;           -- Register selector
-  subtype instr_t is std_logic_vector(C_ILEN-1 downto 0);     -- Instruction
-  subtype funct_t is std_logic_vector(C_FUNCT_W-1 downto 0);  -- Function code
+  subtype instr_t   is std_logic_vector(C_ILEN-1 downto 0);     -- Instruction
+  subtype funct_t   is std_logic_vector(C_FUNCT_W-1 downto 0);  -- Function code
 end ttr_pkg;
