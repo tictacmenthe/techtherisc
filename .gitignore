@@ -1,3 +1,5 @@
 .vscode
 vunit_out/
 *.pdf
+test_lib/test_instructions/*
+!test_lib/test_instructions/.gitkeep
