@@ -53,13 +53,16 @@ begin
       G_NREG => C_NREG
     )
     port map (
-      clk => clk, rst => rst, en => en,
-      reg_src1_sel => reg_src1_sel,
-      reg_src2_sel => reg_src2_sel,
-      reg_dest_sel => reg_dest_sel,
-      reg_src1 => reg_src1,
-      reg_src2 => reg_src2,
-      write_en => write_en, reg_dest => reg_dest
+      clk => clk,
+      rst => rst,
+      i_en => en,
+      i_reg_src1_sel => reg_src1_sel,
+      i_reg_src2_sel => reg_src2_sel,
+      i_reg_dest_sel => reg_dest_sel,
+      o_reg_src1 => reg_src1,
+      o_reg_src2 => reg_src2,
+      i_write_en => write_en,
+      i_reg_dest => reg_dest
     );
 
   -- clk generation process

@@ -28,7 +28,11 @@ entity ttr_decoder is
     o_mem_size      : out mem_size_t; -- 0 = byte, 1 = half word, 2 = word
     o_mem_unsigned  : out std_logic;  -- 0 = sign extension on byte/half word loads
     o_mem_direction : out std_logic;  -- 0 = load, 1 = store
-
+    
+    -- BRANCHING
+    o_op_branch     : out std_logic;  -- There may be a branch incoming (used to stop PC)
+    
+    -- RESULTS
     o_opcode        : out opcode_t;   -- last valid opcode
     o_immediate     : out reg_t;      -- last extracted immediate value
     o_valid         : out std_logic   -- output data is available and valid. 1 cycle pulse
@@ -54,6 +58,7 @@ begin
   begin
     if rst = '1' then
       o_valid         <= '0';
+      o_op_branch     <= '0';
       
       o_opcode        <= (others=>'0');
       o_reg_src2_sel  <=  0;
@@ -73,6 +78,7 @@ begin
       if i_en = '1' then
         o_alu_op_valid  <= '0';
         o_mem_op_valid  <= '0';
+        o_op_branch     <= '0';
         o_valid         <= '1'; --enabled by default
         o_opcode        <=  opcode_i;
         o_reg_src1_sel  <=  to_integer(unsigned(reg_src1_i(R_REG)));
@@ -98,12 +104,11 @@ begin
                             i_instruction(R_IMM_J_3) & i_instruction(R_IMM_J_2) &
                             i_instruction(R_IMM_J_1) & i_instruction(R_IMM_J_0) & '0'
                           , C_XLEN);
-            report "BRANCHING NOT IMPLEMENTED ENTIRELY" severity warning;
-
+            o_op_branch <= '1';
           when C_OPCODE_JALR      => 
             o_alu_f     <= (others=>'0');
             o_immediate <= resize_slv(i_instruction(R_IMM_I), C_XLEN);
-            report "BRANCHING NOT IMPLEMENTED ENTIRELY" severity warning;
+            o_op_branch <= '1';
             
           when C_OPCODE_BRANCH    =>
             o_alu_f     <= C_FUNC7_ZERO & funct3_i;
@@ -111,7 +116,7 @@ begin
                             i_instruction(R_IMM_B_3) & i_instruction(R_IMM_B_2) &
                             i_instruction(R_IMM_B_1) & i_instruction(R_IMM_B_0) & '0'
                           , C_XLEN);
-            report "BRANCHING NOT IMPLEMENTED ENTIRELY" severity warning;
+            o_op_branch <= '1';
 
           when C_OPCODE_LOAD      =>
             o_mem_op_valid  <= '1';

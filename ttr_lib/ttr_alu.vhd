@@ -21,9 +21,12 @@ entity ttr_alu is
     i_alu_f         : in  funct_t;    -- ALU function code
     i_immediate     : in  reg_t;      -- extracted immediate value
 
-    -- Register data
+    -- PC control (branchs)
     i_pc_current    : in  reg_t;      -- current PC value (for JAL)
-
+    o_pc_write_en   : out std_logic;  -- writes a value to PC
+    o_pc_write_val  : out reg_t;      -- new value to write to PC
+    
+    -- Register Data
     i_src1_data     : in  reg_t;      -- register src1 data
     i_src2_data     : in  reg_t;      -- register src2 data
     i_reg_dest_sel  : in  reg_sel_t;  -- destination register selection from decoder
